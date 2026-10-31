@@ -1,0 +1,22 @@
+{
+  "stage": "story",
+  "version": 1,
+  "title": "Story (example rubric: copy to rubrics/<stage>.json and edit)",
+  "layer": {"kind": "text", "files": ["story.md"]},
+  "references": ["brief.md", "research.md"],
+  "pass_score": 95,
+  "judge_notes": "A 15-30 s ad story for a small business. Judge the chosen direction only.",
+  "restructure": {"targets": ["story.md"]},
+  "questions": [
+    {"id": "ST1", "text": "Does the chosen story open with a hook a viewer understands with the sound off in the first 3 seconds?",
+     "weight": 3, "hard": false, "evidence": "Quote the opening beat."},
+    {"id": "ST2", "text": "Is every claim about the product found in research.md?",
+     "weight": 3, "hard": true, "evidence": "Quote each claim and the research line it comes from.", "quote": false},
+    {"id": "ST3", "text": "Does the story end on the brief's call to action?",
+     "weight": 2, "evidence": "Quote the last beat and the brief's call to action."},
+    {"id": "ST4", "text": "Is the story between 40 and 160 words?",
+     "check": "word_count", "args": {"min_words": 40, "max_words": 160}},
+    {"id": "ST5", "text": "Does story.md have the sections Directions, Chosen and Beats?",
+     "check": "has_sections", "args": {"headings": ["Directions", "Chosen", "Beats"]}}
+  ]
+}

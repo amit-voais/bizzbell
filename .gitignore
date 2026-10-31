@@ -1,0 +1,7 @@
+# local only: never published
+docs/internal/
+.tmp/
+__pycache__/
+*.pyc
+.DS_Store
+node_modules/
