@@ -13,6 +13,7 @@ import base64
 import json
 import os
 import re
+import ssl
 import time
 import urllib.error
 import urllib.parse
@@ -64,6 +65,28 @@ class Blocked(HidrogenError):
 
 
 # ---------------------------------------------------------------- key, url, redaction
+
+_SSL = None
+# Python from python.org on macOS ships without CA certificates until "Install Certificates" is run;
+# fall back to the system bundle so a fresh install still reaches the gateway.
+_CA_BUNDLES = ("/etc/ssl/cert.pem", "/etc/ssl/certs/ca-certificates.crt", "/etc/pki/tls/certs/ca-bundle.crt",
+               "/opt/homebrew/etc/openssl@3/cert.pem", "/usr/local/etc/openssl@3/cert.pem")
+
+
+def _ssl_ctx():
+    """A verifying SSL context that has CA certificates, from Python's defaults or the system bundle."""
+    global _SSL
+    if _SSL is None:
+        ctx = ssl.create_default_context()
+        if not ctx.cert_store_stats().get("x509_ca"):
+            for path in _CA_BUNDLES:
+                if os.path.exists(path):
+                    ctx = ssl.create_default_context(cafile=path)
+                    break
+        _SSL = ctx
+    return _SSL
+
+
 def api_url():
     """The gateway base URL, without a trailing slash."""
     return (os.environ.get("HIDROGEN_API_URL") or DEFAULT_API).rstrip("/")
@@ -168,7 +191,8 @@ def request(method, path, body=None, timeout=300, raw=False, idem=None, tries=4,
     for i in range(max(1, tries)):
         try:
             req = urllib.request.Request(url, data=data, headers=headers, method=method.upper())
-            with urllib.request.urlopen(req, timeout=timeout) as r:
+            with urllib.request.urlopen(req, timeout=timeout,
+                                        context=_ssl_ctx() if url.startswith("https:") else None) as r:
                 payload = r.read()
                 if raw:
                     return payload, dict(r.headers)
