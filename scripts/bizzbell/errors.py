@@ -25,6 +25,12 @@ class GateFailed(BBError):
     exit_code = 3
 
 
+class OutOfOrder(BBError):
+    """A paid stage was asked for while a layer it builds on has not passed its gate. Nothing was sent."""
+
+    exit_code = 3
+
+
 class RoundsExhausted(BBError):
     """The restructure rounds for a stage are used up: the agent must ask the user."""
 

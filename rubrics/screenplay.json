@@ -10,7 +10,7 @@
   "questions": [
     {"id": "SP1", "text": "Does every second from 0 to the end have exactly one row?", "weight": 3, "hard": true, "check": "rows_cover_every_second"},
     {"id": "SP2", "text": "Do the shots run from 0 to the end with no gap or overlap, and does every row name the shot playing?", "weight": 2, "check": "shots_cover_timeline"},
-    {"id": "SP3", "text": "Is every live shot 1-3 s long (graphics at most 4 s)?", "weight": 2, "check": "shot_lengths"},
+    {"id": "SP3", "text": "Is every live shot 1-3 s long (graphics at most 4 s)?", "weight": 2, "hard": true, "check": "shot_lengths"},
     {"id": "SP4", "text": "Does the voice-over in lines[] say the humanized story's spoken lines word for word?", "weight": 3, "hard": true, "check": "vo_word_for_word"},
     {"id": "SP5", "text": "Do the rows carry the same voice-over words as lines[], second by second?", "weight": 2, "check": "rows_vo_match_lines"},
     {"id": "SP6", "text": "Is every line timed inside the film, without overlaps, with caption text and spoken text?", "check": "lines_timed"},

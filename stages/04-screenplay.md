@@ -18,13 +18,13 @@
 
 | Field | What it holds |
 |---|---|
-| `title`, `slug`, `lang`, `aspect`, `fps` | as in the brief; `aspect` is the master (9:16, 16:9, 1:1 or 4:5) |
+| `title`, `slug`, `lang`, `aspect`, `fps` | as in the brief; `slug` repeats the project's (`bb init --slug`), which is what names the output files; `aspect` is the master (9:16, 16:9, 1:1 or 4:5) |
 | `duration` | whole seconds; `rows` cover 0 .. duration-1 |
 | `continuity` | rules every prompt follows (light, screen direction, fixed details, "no text in AI frames") |
 | `bibles.characters.<ID>` | `name`, `text` (verbatim block: face, skin, hair, build, fixed details **and wardrobe**), `real_person`, `photos` (consented photos in `refs/`, real people only) |
 | `bibles.locations.<ID>` | `name`, `text` (layout, window/door side, **time of day and light**) |
 | `bibles.props.<ID>` | `name`, `text` (shape, colour, material; "no print, no logo") |
-| `voice` | `name` (a Hidrogen voice, default `priya`), `style` (who speaks to whom, the mood) |
+| `voice` | `name` (a Hidrogen stock voice, default `priya`; `bb voice list`), `gender` (female or male, for the default audition), `candidates` (voices to audition), `audition_text` (the line they read; default the first two VO lines), `style` (who speaks to whom, the mood) |
 | `music` | `prompt` (mood, instruments, length, "no vocals"), `instrumental: true`, `seconds` |
 | `captions` | `max_chars` (default 42), `style` |
 | `shots[]` | `id` (S01 live, G08 graphic), `start`, `end`, `kind` (`live` AI picture, `still` a reference photo used as is, `graphic` built in HyperFrames), `source`, `screen` |

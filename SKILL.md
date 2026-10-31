@@ -15,8 +15,9 @@ what comes next, so you can stop and resume at any point.
 
 ## Permission points (stop and ask in chat; never skip)
 
-1. **The budget, before anything is paid for.** Show a cap in INR, the estimate per stage (from `/v1/media/quote`
-   where it answers, else the rates in `bizzbell.json`), and `max_takes`. Wait for a clear yes, then
+1. **The budget, before anything is paid for.** Show a cap in INR, the estimate per stage
+   (`bb budget estimate --seconds <length>`: free, from `/v1/media/quote` where it answers, else the rates in
+   `bizzbell.json`), and `max_takes`. Wait for a clear yes, then
    `bb budget set <inr> --note "<the user's words>"`. Nothing is spent before it: the ledger refuses every paid
    call (exit 7). The cap is raised only on the user's word (`bb budget raise <inr>`), never by you.
 2. **ChatGPT for the characters (optional).** Ask "Shall I make the characters with ChatGPT, in your browser, on
@@ -45,8 +46,9 @@ Each stage has a guide in `stages/` with its inputs, outputs, exact commands, ru
 you reach the stage.
 
 - [ ] **0. Brief + budget** ([stages/00-brief-budget.md](stages/00-brief-budget.md)).
-  `bb doctor`; `bb init <folder> --brief "..." --lang <lang> --aspect <ratio>`; fill `brief.md`;
-  `bb doctor -p <folder>`; ask for the budget (permission point 1); `bb budget set <inr>`.
+  `bb doctor`; `bb init <folder> --brief "..." --lang <lang> --aspect <ratio> --slug <short-name>`; fill
+  `brief.md`; `bb doctor -p <folder>`; `bb budget estimate --seconds <length>`; ask for the budget (permission
+  point 1); `bb budget set <inr>`.
 - [ ] **1. Research** ([stages/01-research.md](stages/01-research.md)). Your own web search; `research.md` with
   every fact's URL and date read, and the claims list. Gate `research`.
 - [ ] **2. Story** ([stages/02-story.md](stages/02-story.md)). 2-3 directions, one chosen, beats with times.
@@ -61,7 +63,8 @@ you reach the stage.
 - [ ] **6. Keyframes** ([stages/06-keyframes.md](stages/06-keyframes.md)). `bb keyframes make`.
   Gate `keyframes`.
 - [ ] **7. Voice, music, mix** ([stages/07-voice-music-mix.md](stages/07-voice-music-mix.md)).
-  `bb voice audition`, `bb voice takes`, `bb voice place`, `bb music make`, `bb mix`. Gate `voice`, `music`, `mix`.
+  `bb voice list`, `bb voice audition <voice> <voice> <voice>`, `bb voice takes`, `bb voice place`,
+  `bb music make`, `bb mix`. Gate `voice`, `music`, `mix`.
 - [ ] **8A. Version A, Hidrogen video** ([stages/08a-version-a.md](stages/08a-version-a.md)). Only if
   `/v1/videos` is live, else `bb mark video_a skipped --note "..."`. `bb clips make`, gate `clips`;
   `bb version_a`, gate `version_a`.
@@ -88,15 +91,24 @@ bb gate <layer>            # again
    Two judge passes, a third if they disagree. Saved as `gates/<layer>.<n>.json`.
 2. **Pass at 95 or more, with no hard question at no.** Hard questions include: a logo or text in an AI frame, a
    claim not in the research, a real face without consent, vocals in the music, a voice-over that is not word for
-   word, any second missing from the screenplay.
+   word, any second missing from the screenplay, a shot outside 1-3 s, and any missing or flagged item of a media
+   layer (a sheet, a keyframe, a clip, a VO line). A flagged item is one no take passed: show it to the user, who
+   accepts it (`bb keyframes approve <shot>`, `bb clips pick <shot> --take N`) or has it made again.
 3. **Below 95: `bb restructure <layer>`.** The restructure model (Opus-class where the key has one, chosen by
    `bb doctor`) gets the layer, its references and the failed questions with the judge's evidence, and rewrites
    the layer (text layers) or its prompts (media layers: then make the changed items again). Then gate again.
 4. **At most 3 restructure rounds per layer.** Still below 95 after round 3 (`bb restructure` exits 4): stop, show
    the user the score and the failing questions, and ask (permission point 4): accept it
-   (`bb mark <stage> passed --note "accepted by the user"`), edit it by hand and gate again, or allow one more
+   (`bb mark <layer> passed --note "accepted by the user"`), edit it by hand and gate again, or allow one more
    round (`bb restructure <layer> --extra --note "user said yes"`). Never pass `--extra` without that yes.
-5. Fix a failed layer before moving on: a later layer is judged against the earlier ones.
+5. Fix a failed layer before moving on: a later layer is judged against the earlier ones, and the paid media
+   commands refuse to start (exit 3, nothing sent) while a layer they build on has not passed or been accepted.
+6. A layer that passed and is then changed (a keyframe rejected, a file edited) shows as `changed` in
+   `bb status`: gate it again.
+
+Media sub-layers roll up into a stage: `voice`, `music` and `mix` make stage `audio`; `clips` and `version_a` make
+stage `video_a`. The stage passes when all its layers have, and fails when one fails. `bb gate`, `bb restructure`
+and `bb mark` take the layer names.
 
 Layers: `research`, `story`, `humanize`, `screenplay`, `characters`, `keyframes`, `voice`, `music`, `mix`,
 `clips`, `version_a`, `video_b`, `final` (both versions together), `final_a` and `final_b` (one version each,
@@ -116,7 +128,7 @@ written by `bb final`). A project can override any rubric with `<folder>/rubrics
 | Exit | Meaning | Do |
 |---|---|---|
 | 2 | usage | read the message; `bb <command> --help` |
-| 3 | gate failed | the gate loop above |
+| 3 | gate failed, or a paid stage asked for before the layers it builds on passed | the gate loop above |
 | 4 | restructure rounds used up | permission point 4 |
 | 5 | 402: wallet empty | tell the user to recharge their Hidrogen wallet; stop |
 | 6 | 404: endpoint not live | media endpoints off: skip Version A (`bb mark video_a skipped`), still make Version B |

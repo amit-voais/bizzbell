@@ -9,10 +9,12 @@ DATE = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
 
 # Spoken fillers that make Hindi / Hinglish voice-over sound like a person (stages/03-humanize.md).
 FILLERS = {
-    "hinglish": ("yaar", "matlab", "umm", "um", "na", "haan", "arre", "accha", "achha", "dekho", "suno",
-                 "chalo"),
-    "hi": ("यार", "मतलब", "उम्म", "ना", "हाँ", "हां", "अरे", "अच्छा", "देखो", "सुनो", "चलो"),
+    "hinglish": ("yaar", "matlab", "umm", "um", "haan", "arre", "accha", "achha", "dekho", "suno", "chalo"),
+    "hi": ("यार", "मतलब", "उम्म", "हाँ", "हां", "अरे", "अच्छा", "देखो", "सुनो", "चलो"),
 }
+# "na" / "ना" is a filler only as a tag at the end of a clause ("accha hai na?"); before a verb it means "not"
+# ("na jaun") and is not counted.
+TAG_NA = re.compile(r"""(?:^|(?<=[\s,.!?…"'(]))(na|ना)\s*(?=[,.!?…;:"')]|$)""", re.I)
 
 
 def section_lines(text, word):
@@ -68,8 +70,8 @@ def claims_cited(ctx, file="research.md", section="Claims", sources="Sources"):
 
 @check("fillers_natural")
 def fillers_natural(ctx, file="story_humanized.md", section="Voice-over", min_fillers=2, max_ratio=0.15):
-    """Hindi / Hinglish voice-over has real spoken fillers (yaar, matlab, umm, na, haan, arre), at least min_fillers
-    and at most max_ratio of the words. Other languages answer yes (their tone is judged by the model)."""
+    """Hindi / Hinglish voice-over has real spoken fillers (yaar, matlab, umm, haan, arre, a tag "na?"), at least
+    min_fillers and at most max_ratio of the words. Other languages answer yes (their tone is judged by the model)."""
     lang = str(ctx.state.get("lang", "en")).lower()
     key = "hinglish" if lang in ("hinglish", "hi-latn") else ("hi" if lang in ("hi", "hindi") else None)
     if key is None:
@@ -80,7 +82,7 @@ def fillers_natural(ctx, file="story_humanized.md", section="Voice-over", min_fi
     spoken = " ".join(lines)
     words = norm_words(spoken)
     fillers = set(FILLERS["hinglish"] + FILLERS["hi"])
-    found = [w for w in words if w in fillers]
+    found = [w for w in words if w in fillers] + [m.group(1).lower() for ln in lines for m in TAG_NA.finditer(ln)]
     ratio = float(len(found)) / max(1, len(words))
     if len(found) < min_fillers:
         return "no", "only %d filler(s) (%s) in %d words; a person would say a few" % (

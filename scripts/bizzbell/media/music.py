@@ -27,6 +27,8 @@ def build_prompts(sp):
 
 def make(root, seconds=None, dry_run=False, rebuild_prompts=False, redo=False, fix="", extra=0, judge=True, log=print):
     """Generate the bed (retakes up to max_takes), then edit it to the film. Returns the item or the plan."""
+    if not dry_run:
+        project.require_done(root, "audio")
     sp = screenplay.load(root)
     prompts = store.sync_prompts(root, D, build_prompts(sp), rebuild=rebuild_prompts)
     prompt = prompts.get("bed")
@@ -54,9 +56,10 @@ def make(root, seconds=None, dry_run=False, rebuild_prompts=False, redo=False, f
 
     def generate(n, fx):
         text = prompt + ((" " + fx) if fx and not fx.startswith("Fix these") else "")
+        key = store.idem(root, "music", ph, n, fx)
         outs, _job = paid.call(root, "music", lambda: hidrogen.music(
-            text, seconds=secs, instrumental=True, model=model, idem=store.idem(root, "music", ph, n, fx)),
-            model=model, purpose="music bed take %d" % n, quote_params={"seconds": secs})
+            text, seconds=secs, instrumental=True, model=model, idem=key),
+            model=model, purpose="music bed take %d" % n, quote_params={"seconds": secs}, ref=key)
         data, mime = outs[0]
         ext = ".mp3" if "mpeg" in (mime or "") else ".m4a" if "mp4" in (mime or "") else ".wav"
         raw = os.path.join(D, "takes", "bed_t%d%s" % (n, ext))

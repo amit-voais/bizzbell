@@ -5,13 +5,15 @@ project.json   stage (next to do), status, stages{id: {status, gate_runs, last_g
 bizzbell.json  models{role: id|"auto"}, models_chosen{role: {id, reason, at}}, budget{cap_inr, approved, ...},
                gate{pass_score, max_rounds, passes, disagree_points}, hyperframes{version}, endpoints{...}
 
-Stage status values: todo, made, passed, failed, restructured, skipped."""
+Stage status values: todo, made, passed, failed, restructured, skipped (stored), and changed (computed: passed,
+but a file its gate scored was changed or removed since)."""
 import glob
+import hashlib
 import os
 import re
 
 from . import util
-from .errors import ConfigError, UsageError
+from .errors import ConfigError, OutOfOrder, UsageError
 
 ROLES = ("writer", "judge", "restructure", "image", "video", "voice", "music")
 TEXT_ROLES = ("writer", "judge", "restructure")
@@ -35,6 +37,13 @@ STAGES = [
     {"id": "final", "n": "9", "title": "Final", "outputs": ["out/report.md"], "gated": False},
 ]
 STAGE_IDS = [s["id"] for s in STAGES]
+# Media sub-layers gated on their own (bb gate voice ...) and rolled up into their stage.
+LAYER_PARENT = {"voice": "audio", "music": "audio", "mix": "audio", "clips": "video_a", "version_a": "video_a"}
+STAGE_PARTS = {"audio": ("voice", "music", "mix"), "video_a": ("clips", "version_a")}
+# The gated layers a paid stage builds on: they must be done (passed, accepted or skipped) before it spends.
+_TEXT = ("research", "story", "humanize", "screenplay")
+REQUIRES = {"characters": _TEXT, "keyframes": _TEXT + ("characters",), "audio": _TEXT,
+            "video_a": _TEXT + ("characters", "keyframes")}
 DIRS = ["characters", "keyframes", "audio", "clips", "out/A", "out/B", "gates", "rubrics", "refs"]
 
 DEFAULT_SETTINGS = {
@@ -44,7 +53,7 @@ DEFAULT_SETTINGS = {
     "models_chosen": {},
     "budget": {"cap_inr": 0, "approved": False, "max_takes": 3,
                "rates_inr": {"chat": 2.0, "judge": 3.0, "image": 6.0, "video_second": 8.0, "voice": 1.0,
-                             "music": 5.0}},
+                             "music": 5.0, "chat_per_1k_tokens": 2.5}},
     "gate": {"pass_score": 95, "max_rounds": 3, "passes": 2, "disagree_points": 10},
     "hyperframes": {"version": HYPERFRAMES_VERSION},
     "voice": {"name": "priya"},
@@ -136,8 +145,9 @@ def stage_state(root, stage_id):
 
 
 def mark_stage(root, stage_id, status, **fields):
-    """Set a stage's status (todo|made|passed|failed|restructured|skipped) plus extra fields; refresh `stage`."""
-    if stage_id not in STAGE_IDS:
+    """Set a stage's (or a media sub-layer's) status (todo|made|passed|failed|restructured|skipped) plus extra
+    fields; refresh `stage`."""
+    if stage_id not in STAGE_IDS and stage_id not in LAYER_PARENT:
         raise UsageError("unknown stage %r" % stage_id)
 
     def f(st):
@@ -147,6 +157,48 @@ def mark_stage(root, stage_id, status, **fields):
         s.update(fields)
     update_state(root, f)
     refresh(root)
+
+
+# ---------------------------------------------------------------- layer snapshots
+_HASHES = {}
+
+
+def _file_sha(p):
+    st = os.stat(p)
+    key = (p, st.st_size, st.st_mtime_ns)
+    if key not in _HASHES:
+        h = hashlib.sha256()
+        with open(p, "rb") as f:
+            for chunk in iter(lambda: f.read(1 << 20), b""):
+                h.update(chunk)
+        _HASHES[key] = h.digest()
+    return _HASHES[key]
+
+
+def files_hash(root, rel_files):
+    """Short content hash of the given project files (names + bytes), or None when one of them is missing."""
+    h = hashlib.sha256()
+    for rel in rel_files:
+        p = path(root, rel)
+        if not os.path.isfile(p):
+            return None
+        h.update(rel.encode())
+        h.update(_file_sha(p))
+    return h.hexdigest()[:16]
+
+
+def layer_changed(root, rec):
+    """True when a stage record's layer snapshot (the files a gate scored or the user accepted) no longer matches
+    the files on disk: one was changed, moved away or deleted. New files do not count (bb final adds sizes)."""
+    snap = (rec or {}).get("layer") or {}
+    if not snap.get("files") or not snap.get("hash"):
+        return False
+    return files_hash(root, snap["files"]) != snap["hash"]
+
+
+def _changed(root, stage_id, state):
+    stages = state.get("stages") or {}
+    return any(layer_changed(root, stages.get(i)) for i in STAGE_PARTS.get(stage_id, (stage_id,)))
 
 
 # ---------------------------------------------------------------- models
@@ -165,14 +217,18 @@ def model_for(root, role):
     chosen = (s.get("models_chosen") or {}).get(role) or {}
     if chosen.get("id"):
         return chosen["id"]
-    raise ConfigError("no model chosen for the %s role yet: run python3 scripts/bb.py doctor, or set BB_%s_MODEL"
-                      % (role, role.upper()))
+    raise ConfigError("no model chosen for the %s role yet: run python3 scripts/bb.py doctor -p <folder> until it "
+                      "says ready (it needs the key to read /v1/models), or set BB_%s_MODEL" % (role, role.upper()))
 
 
 # ---------------------------------------------------------------- init + status
-def slugify(text, fallback="film"):
+def slugify(text, fallback="film", limit=40):
+    """A file-name slug of at most `limit` characters, cut at a word boundary (never mid-word)."""
     s = re.sub(r"[^a-z0-9]+", "-", (text or "").lower()).strip("-")
-    return s[:40].strip("-") or fallback
+    if len(s) > limit:
+        cut = s[:limit + 1]
+        s = cut.rsplit("-", 1)[0] if "-" in cut else s[:limit]
+    return s.strip("-") or fallback
 
 
 BRIEF_TEMPLATE = """# Brief
@@ -228,12 +284,15 @@ def outputs_present(root, stage_id):
 
 
 def stage_status(root, stage_id, state=None, settings=None):
-    """Effective status: the recorded one, upgraded todo -> made when the outputs exist (brief also needs a budget)."""
+    """Effective status: the recorded one, upgraded todo -> made when the outputs exist (brief also needs a budget),
+    and passed -> changed when a file the gate scored was changed or removed since (gate it again)."""
     state = state if state is not None else load_state(root)
     rec = (state.get("stages") or {}).get(stage_id, {})
     st = rec.get("status", "todo")
     if st == "todo" and outputs_present(root, stage_id):
         st = "made"
+    if st == "passed" and _changed(root, stage_id, state):
+        st = "changed"
     if stage_id == "brief" and st == "made":
         settings = settings or load_settings(root)
         if settings.get("budget", {}).get("approved") and settings["budget"].get("cap_inr", 0) > 0:
@@ -248,6 +307,20 @@ def done(stage_id, status):
     if stage_id == "brief":
         return False
     return status == "made" and not stage(stage_id)["gated"]
+
+
+def require_done(root, stage_id):
+    """Raise OutOfOrder unless every layer `stage_id` builds on is done (spec: a later layer is made and judged
+    against passed earlier ones). Called before a paid stage spends; dry runs skip it."""
+    state, settings = load_state(root), load_settings(root)
+    open_ = [(s, stage_status(root, s, state, settings)) for s in REQUIRES.get(stage_id, ())]
+    open_ = [(s, st) for s, st in open_ if not done(s, st)]
+    if open_:
+        raise OutOfOrder(
+            "%s builds on layers that have not passed their gate: %s. Nothing was sent. Gate them first "
+            "(python3 scripts/bb.py gate <layer>, restructure on a fail), or, if the user accepts one as it is, "
+            "python3 scripts/bb.py mark <layer> passed --note \"accepted by the user\"."
+            % (stage_id, ", ".join("%s (%s)" % x for x in open_)))
 
 
 def next_stage(root):

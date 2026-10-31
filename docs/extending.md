@@ -61,7 +61,13 @@ estimate (from `/v1/media/quote` when `quote_params` is given and the quote answ
 `bizzbell.json budget.rates_inr[kind] x units`), refuses with `BudgetExceeded` past the cap or before a budget
 was approved, runs `fn`, and settles with the INR the reply reports (`charged_inr`). Kinds: `chat`, `judge`,
 `image`, `video` (units = seconds), `voice`, `music`. `PaymentRequired`, `NotAvailable`, `Blocked` and other
-4xx release the reservation (charged 0).
+4xx release the reservation (charged 0). A `chat` call passes `quote_params={"max_tokens": N, "chars": len(prompt)}`:
+without a quote it is reserved at its worst case (`rates_inr.chat_per_1k_tokens`), so one long reply cannot pass
+the cap. Pass `ref=<the call's Idempotency-Key>` for a paid take: a reservation left by a killed process is
+counted as "uncertain", and released when the same take is sent again with the same key.
+
+A paid media command calls `project.require_done(root, <stage>)` before it spends (not on a dry run), so it
+refuses to start while a layer it builds on (`project.REQUIRES`) has not passed or been accepted.
 
 ## 3. Write a rubric (`rubrics/<stage>.json`)
 

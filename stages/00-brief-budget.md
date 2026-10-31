@@ -12,8 +12,10 @@
 1. Run the checks and make the project:
    ```
    python3 scripts/bb.py doctor
-   python3 scripts/bb.py init <folder> --brief "<one or two sentences>" --lang <en|hi|hinglish|...> --aspect <9:16|16:9|1:1|4:5>
+   python3 scripts/bb.py init <folder> --brief "<one or two sentences>" --lang <en|hi|hinglish|...> --aspect <9:16|16:9|1:1|4:5> --slug <short-name>
    ```
+   `--slug` (for example `gym-free-week`) names every output file (`out/A/<slug>_A_9x16.mp4`) and the report.
+   Choose a short one; without it the slug is cut from the brief's first words. It is fixed at init.
    `doctor` makes no paid call. If the key is missing, ask the user to run `python3 scripts/bb.py key` themselves
    (it reads the key from a hidden prompt). Never ask them to paste a key into the chat.
 2. Fill `brief.md` (template: `templates/brief.md`): length, product and offer exactly as the user said it, audience,
@@ -21,8 +23,9 @@
    question at a time.
 3. Run `python3 scripts/bb.py doctor -p <folder>` so the model choice and the endpoint status are saved in the project.
 4. **Ask for the budget (permission point 1).** Show, in INR:
-   - an estimate per stage from `/v1/media/quote` where the endpoint answers, else from the rates in
-     `bizzbell.json` `budget.rates_inr` (say which);
+   - the estimate per stage, likely and worst case, from
+     `python3 scripts/bb.py budget estimate -p <folder> --seconds <length>` (free: it asks `/v1/media/quote` where
+     the endpoint answers, else uses `bizzbell.json` `budget.rates_inr`, and says which);
    - the number of takes allowed per item (`budget.max_takes`, default 3);
    - that Version B (HyperFrames) costs no video seconds, and Version A is made only if `/v1/videos` is live.
    Stop and wait for a clear yes and an amount.

@@ -138,9 +138,8 @@ def shot_lengths(ctx, file=SCREENPLAY, min_seconds=1, max_seconds=3, graphic_max
         top = graphic_max_seconds if s.get("kind") == "graphic" else max_seconds
         if length < min_seconds or length > top:
             bad.append("%s is %.1f s" % (s.get("id"), length))
-    if bad:
-        return ("partly" if len(bad) == 1 else "no"), "outside %s-%s s: %s" % (min_seconds, max_seconds,
-                                                                             ", ".join(bad))
+    if bad:      # one long shot is enough to break the 1-3 s rule: completeness is not graded
+        return "no", "outside %s-%s s: %s" % (min_seconds, max_seconds, ", ".join(bad))
     return "yes", "every live shot is %s-%s s, graphics at most %s s" % (min_seconds, max_seconds,
                                                                       graphic_max_seconds)
 
@@ -389,7 +388,6 @@ def shot_files_exist(ctx, folder="keyframes", ext=".png", kinds=("live",), file=
     missing = [i for i in want if not os.path.isfile(os.path.join(ctx.root, folder, i + ext))]
     if not want:
         return "yes", "no %s shots" % "/".join(kinds)
-    if missing:
-        return ("partly" if len(missing) < len(want) else "no"), "missing %s/<id>%s for %s" % (
-            folder, ext, ", ".join(missing))
+    if missing:      # a layer with a missing file is not finished: never "partly"
+        return "no", "missing %s/<id>%s for %s" % (folder, ext, ", ".join(missing))
     return "yes", "all %d %s shots have %s/<id>%s" % (len(want), "/".join(kinds), folder, ext)

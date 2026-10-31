@@ -15,6 +15,7 @@ import os
 import re
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 import uuid
 
@@ -191,14 +192,36 @@ def request(method, path, body=None, timeout=300, raw=False, idem=None, tries=4,
     raise HidrogenError("could not reach the Hidrogen gateway at %s (%s)" % (api_url(), last[:300]))
 
 
+LOOPBACK = ("127.0.0.1", "localhost", "::1")
+
+
+def safe_result_url(url):
+    """Raise HidrogenError unless `url` is https (or http to this machine, for the mock). A result URL from a reply
+    must never make Bizzbell read a local file (file://) or speak another protocol."""
+    u = urllib.parse.urlsplit(str(url or ""))
+    host = (u.hostname or "").lower()
+    if not host or not (u.scheme == "https" or (u.scheme == "http" and host in LOOPBACK)):
+        raise HidrogenError("refused a result URL that is not https (scheme %r)" % (u.scheme or "none"))
+    return url
+
+
+class _SafeRedirects(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        safe_result_url(newurl)
+        return urllib.request.HTTPRedirectHandler.redirect_request(self, req, fp, code, msg, headers, newurl)
+
+
 def download(url, timeout=600):
-    """Bytes at a signed result URL (no key needed)."""
+    """Bytes at a signed result URL (no key needed). Only https (http to 127.0.0.1 for the mock), redirects too."""
+    safe_result_url(url)
     try:
         req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-        with urllib.request.urlopen(req, timeout=timeout) as r:
+        with urllib.request.build_opener(_SafeRedirects).open(req, timeout=timeout) as r:
             return r.read()
+    except HidrogenError:
+        raise
     except Exception as e:
-        raise HidrogenError("download failed: %s" % e)
+        raise HidrogenError("download failed: %s" % redact(e))
 
 
 def data_url(b64, mime):

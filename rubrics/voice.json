@@ -10,7 +10,7 @@
   "questions": [
     {"id": "VO1", "text": "Is audio/vo.wav present and not empty?", "check": "files_exist", "args": {"files": ["audio/vo.wav"]}},
     {"id": "VO2", "text": "Does the voice track last the film's duration?", "check": "media_duration", "args": {"files": ["audio/vo.wav"]}},
-    {"id": "VO11", "text": "Is every voice-over line placed on the timeline?", "weight": 2, "check": "vo_covers_lines"},
+    {"id": "VO11", "text": "Is every voice-over line placed on the timeline?", "weight": 2, "hard": true, "check": "vo_covers_lines"},
     {"id": "VO12", "text": "Does every line end inside its shot?", "check": "vo_fits_shots"},
     {"id": "VO13", "text": "For Hindi and Hinglish, is the text sent to the voice in Devanagari?", "weight": 2, "check": "voice_text_devanagari"},
     {"id": "VO3", "text": "Does the voice say the words of its line or lines exactly, in order, with nothing added or dropped?", "weight": 3, "hard": true, "evidence": "Name any word added, dropped or changed.", "quote": false},

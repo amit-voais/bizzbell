@@ -10,9 +10,10 @@ HELP = "voice-over: audition voices, judged takes per line, place on the timelin
 
 
 def register(p):
-    p.add_argument("action", choices=["audition", "takes", "place", "show", "gate", "restructure"],
-                   help="audition [voice ...] (paid) | takes [line ...] (paid) | place (free) | show | gate | "
-                        "restructure")
+    p.add_argument("action", choices=["list", "audition", "takes", "place", "show", "gate", "restructure"],
+                   help="list (the stock voices) | audition [voice ...] (paid; default: voice.candidates, else "
+                        "voice.name and two stock voices like it) | takes [line ...] (paid) | place (free) | show | "
+                        "gate | restructure")
     p.add_argument("items", nargs="*", help="audition: voice names; takes: line ids")
     add_project_arg(p)
     cmdutil.add_make_args(p)
@@ -21,6 +22,12 @@ def register(p):
 
 
 def run(args):
+    if args.action == "list":
+        for g in sorted(voice.STOCK):
+            print("%-7s %s" % (g, ", ".join(voice.STOCK[g])))
+        print("audition some: python3 scripts/bb.py voice audition <name> <name> <name> -p <folder> "
+              "(or set voice.candidates in screenplay.json)")
+        return 0
     root = project.find_project(args.project)
     if args.action == "audition":
         names = [n.strip() for x in args.items for n in x.split(",") if n.strip()]

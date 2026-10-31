@@ -4,6 +4,8 @@ import os
 
 from helpers import MockCase
 
+from bizzbell import project
+
 # A tiny generic project: two live shots and an end card, Hinglish (Devanagari voice text, Roman captions).
 SCREENPLAY = {
     "bizzbell": 1, "title": "Morning gym", "slug": "gym-reel", "lang": "hinglish", "aspect": "9:16", "fps": 24,
@@ -110,6 +112,8 @@ class MediaCase(MockCase):
             s = json.load(f)
         s.setdefault("media", {})["width"] = 180
         self.write(root, "bizzbell.json", s)
+        for st in ("research", "story", "humanize", "screenplay", "characters", "keyframes"):
+            project.mark_stage(root, st, "passed", note="test fixture: the earlier layers passed")
         return root
 
     def posts(self, prefix):

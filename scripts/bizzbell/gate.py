@@ -14,7 +14,6 @@ Rubric schema: see docs/extending.md and validate_rubric(). Every question is ph
 Text layers: a "yes" whose quoted evidence is not found in the layer or its references is downgraded to
 "partly" (questions with "quote": false are exempt), so a judge cannot pass a layer on a vibe."""
 import glob
-import hashlib
 import importlib
 import json
 import os
@@ -27,6 +26,7 @@ from .errors import BBError, ConfigError, UsageError
 ANSWERS = {"yes": 1.0, "partly": 0.5, "no": 0.0}
 MAX_TEXT_CHARS = 200000
 MAX_FILES_DEFAULT = 8
+JUDGE_MAX_TOKENS = 8192
 
 # ---------------------------------------------------------------- local checks registry
 _CHECKS = {}
@@ -178,12 +178,19 @@ class GateContext(object):
 
 
 def layer_hash(ctx):
-    h = hashlib.sha256()
-    for p in ctx.layer_files:
-        h.update(ctx.rel(p).encode())
-        with open(p, "rb") as f:
-            h.update(hashlib.sha256(f.read()).digest())
-    return h.hexdigest()[:16]
+    return project.files_hash(ctx.root, [ctx.rel(p) for p in ctx.layer_files])
+
+
+def snapshot(root, stage_id):
+    """{"files", "hash"} of a layer's files as they are now (what a pass or the user's acceptance covers), or None
+    when the layer has no rubric or no files."""
+    try:
+        rubric = load_rubric(root, stage_id)
+    except (UsageError, ConfigError):
+        return None
+    files = [os.path.relpath(p, root) for p in _expand(root, rubric["layer"]["files"])]
+    h = project.files_hash(root, files) if files else None
+    return {"files": files, "hash": h} if h else None
 
 
 # ---------------------------------------------------------------- answers
@@ -251,19 +258,23 @@ def _norm_text(s):
 
 
 def evidence_found(evidence, haystack):
-    """True when the quoted part(s) of `evidence` appear in `haystack` (case/whitespace-insensitive).
+    """True when EVERY quoted part of `evidence` appears in `haystack` (case/whitespace-insensitive), so one real
+    quote cannot carry an invented one.
 
-    Quoted spans ("..." or '...') are checked if present, else the whole evidence; '...' splits fragments;
+    Quoted spans ("..." or “...”) are checked if present, else the whole evidence; '...' splits fragments;
     fragments shorter than 6 characters are ignored."""
     hay = _norm_text(haystack)
-    spans = re.findall(r'"([^"]{6,})"', evidence) or re.findall(r"“([^”]{6,})”", evidence) \
-        or [evidence]
+    spans = re.findall(r'"([^"]{6,})"', evidence) + re.findall(r"“([^”]{6,})”", evidence) or [evidence]
+    checked = 0
     for span in spans:
         frags = [f.strip(" .,:;'\"") for f in re.split(r"\.\.\.|…", span)]
         frags = [f for f in frags if len(f) >= 6]
-        if frags and all(_norm_text(f) in hay for f in frags):
-            return True
-    return False
+        if not frags:
+            continue
+        if not all(_norm_text(f) in hay for f in frags):
+            return False
+        checked += 1
+    return checked > 0
 
 
 # ---------------------------------------------------------------- judge prompts
@@ -326,8 +337,9 @@ def _ask_judge(ctx, questions, model, led, pass_no):
                     obj = None
         else:
             reply = led.call("chat", lambda: hidrogen.chat(msg, model, system_prompt=JUDGE_SYSTEM, temperature=0.2,
-                                                           max_tokens=8192, json_mode=True),
-                             model=model, purpose="gate %s pass %d" % (ctx.stage, pass_no))
+                                                           max_tokens=JUDGE_MAX_TOKENS, json_mode=True),
+                             model=model, purpose="gate %s pass %d" % (ctx.stage, pass_no),
+                             quote_params={"max_tokens": JUDGE_MAX_TOKENS, "chars": len(msg) + len(JUDGE_SYSTEM)})
             try:
                 obj = hidrogen.parse_json_text(reply["text"])
             except ValueError:
@@ -470,10 +482,13 @@ def _record_in_project(root, stage_id, rec):
         s.pop("note", None)                      # a note about the earlier status ("gate it: ...") is stale now
         s["gate_runs"] = s.get("gate_runs", 0) + 1
         s["last_gate"] = rec["run"]
+        s["layer"] = {"files": rec["layer_files"], "hash": rec["layer_hash"]}
         s.setdefault("history", []).append({"gate": rec["run"], "score": rec["score"], "passed": rec["passed"],
                                             "time": rec["time"]})
         st.setdefault("scores", {})[stage_id] = rec["score"]
     project.update_state(root, f)
+    from .media import layers          # a media sub-layer's stage follows it on every path, not only bb gate
+    layers.rollup(root, stage_id)
     project.refresh(root)
 
 

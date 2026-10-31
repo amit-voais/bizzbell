@@ -38,7 +38,9 @@ def npx():
 
 
 def env():
-    e = dict(os.environ)
+    """The environment for npx: quiet HyperFrames, and no HIDROGEN_* variable (the key stays out of third-party
+    code that does not need it)."""
+    e = {k: v for k, v in os.environ.items() if not k.upper().startswith("HIDROGEN_")}
     e.update(QUIET_ENV)
     path = e.get("PATH", "")
     for extra in ("/opt/homebrew/bin", "/usr/local/bin"):
@@ -105,19 +107,33 @@ def available(root=None, timeout=240):
     return res
 
 
+def _last_line(r):
+    return ((r.stdout or "").strip().splitlines() or [""])[-1].strip()
+
+
+def headless_shell(p):
+    """True when `p` is chrome-headless-shell (what HyperFrames downloads), not a full desktop Chrome."""
+    return os.path.basename(p or "").lower().startswith("chrome-headless-shell")
+
+
 def browser_path(root=None):
-    """The headless Chrome HyperFrames renders with (downloaded on first use by `browser ensure`)."""
+    """HyperFrames' chrome-headless-shell (downloaded on first use). $HYPERFRAMES_BROWSER_PATH wins.
+
+    `hyperframes browser path` falls back to a system Google Chrome when nothing is cached yet, and full Chrome
+    hangs on the DOM bounds check (--virtual-time-budget), so a full Chrome is replaced by a headless-shell
+    download (`browser ensure --force`, which only downloads; plain `ensure` would settle for the system one)."""
     if "browser" in _CACHE:
         return _CACHE["browser"]
     p = os.environ.get("HYPERFRAMES_BROWSER_PATH", "")
     if not (p and os.path.exists(p)):
-        r = run(["browser", "path"], root=root, timeout=300, check=False)
-        p = ((r.stdout or "").strip().splitlines() or [""])[-1].strip()
-        if not (p and os.path.exists(p)):
-            run(["browser", "ensure"], root=root, timeout=900)
-            r = run(["browser", "path"], root=root, timeout=300)
-            p = ((r.stdout or "").strip().splitlines() or [""])[-1].strip()
+        p = _last_line(run(["browser", "path"], root=root, timeout=300, check=False))
+        if not (p and os.path.exists(p) and headless_shell(p)):
+            fallback = p if (p and os.path.exists(p)) else ""
+            run(["browser", "ensure", "--force"], root=root, timeout=900, check=not fallback)
+            p = _last_line(run(["browser", "path"], root=root, timeout=300, check=False))
+            if not (p and os.path.exists(p)):
+                p = fallback
     if not (p and os.path.exists(p)):
-        raise Unavailable("HyperFrames' headless Chrome was not found (try: npx hyperframes browser ensure)")
+        raise Unavailable("HyperFrames' headless Chrome was not found (try: npx hyperframes browser ensure --force)")
     _CACHE["browser"] = p
     return p

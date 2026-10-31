@@ -11,6 +11,7 @@ the CLI prints "bizzbell: <message>" (redacted) and exits with its exit_code. --
 import argparse
 import importlib
 import pkgutil
+import signal
 import sys
 import traceback
 
@@ -57,8 +58,17 @@ def build_parser():
     return ap
 
 
+def _on_term(signum, _frame):
+    """SIGTERM ends the command like Ctrl-C does, so an open ledger reservation is settled before exit."""
+    raise SystemExit(128 + signum)
+
+
 def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
+    try:
+        signal.signal(signal.SIGTERM, _on_term)
+    except ValueError:          # not the main thread (tests): keep the default
+        pass
     debug = "--debug" in argv
     argv = [a for a in argv if a != "--debug"]
     ap = build_parser()

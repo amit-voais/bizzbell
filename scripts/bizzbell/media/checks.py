@@ -49,6 +49,11 @@ def _ratio(answer_parts, total):
     return "partly" if len(answer_parts) < total else "no"
 
 
+def _all(answer_parts):
+    """Completeness checks: every item or nothing ("yes" / "no", never "partly")."""
+    return "no" if answer_parts else "yes"
+
+
 @check("sheets_cover_cast")
 def sheets_cover_cast(ctx):
     from .characters import file_for
@@ -57,7 +62,7 @@ def sheets_cover_cast(ctx):
     if not keys:
         return "yes", "the screenplay has no character or location bibles"
     missing = [k for k in keys if not os.path.exists(os.path.join(ctx.root, file_for(k)))]
-    return _ratio(missing, len(keys)), ("missing: " + ", ".join(missing)) if missing else \
+    return _all(missing), ("missing: " + ", ".join(missing)) if missing else \
         "all %d sheets/plates present" % len(keys)
 
 
@@ -72,7 +77,7 @@ def vo_covers_lines(ctx):
     missing = [l for l in want if l not in have]
     if not want:
         return "yes", "the screenplay has no VO lines"
-    return _ratio(missing, len(want)), ("not on the timeline: " + ", ".join(missing)) if missing else \
+    return _all(missing), ("not on the timeline: " + ", ".join(missing)) if missing else \
         "%d lines placed" % len(want)
 
 
@@ -136,8 +141,10 @@ def none_flagged(ctx, dir="keyframes"):
     flagged = [k for k, v in items.items() if v.get("status") == "flagged"]
     if not items:
         return "no", "%s/registry.json has no items yet" % dir
-    return _ratio(flagged, len(items)), ("flagged: " + ", ".join(flagged)) if flagged else \
-        "%d items, none flagged" % len(items)
+    if flagged:      # no take passed its own judge: the user decides (bb keyframes approve, bb clips pick)
+        return "no", ("flagged, no take passed its judge: %s. Show the user; they accept it (bb keyframes approve "
+                      "<id> / bb clips pick <id> --take N) or it is made again" % ", ".join(flagged))
+    return "yes", "%d items, none flagged" % len(items)
 
 
 @check("no_freeze_frames")

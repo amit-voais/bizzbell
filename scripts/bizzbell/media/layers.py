@@ -1,14 +1,14 @@
 """Gating the media layers with the core gate engine, and rolling sub-layers up into their stage.
 
 Rubric ids: characters, keyframes (the stage ids themselves), and the sub-layers voice, music, mix (stage audio)
-and clips, version_a (stage video_a). When every sub-layer of a stage has passed (or was skipped), the stage is
-marked passed in project.json. `bb gate <layer>` and `bb restructure <layer>` accept these ids too; `bb gate audio`
+and clips, version_a (stage video_a). The stage follows its sub-layers in project.json: passed when every one has
+passed (or was skipped), failed as soon as one fails, and out of passed again when one is no longer passed. `bb gate <layer>` and `bb restructure <layer>` accept these ids too; `bb gate audio`
 / `bb gate video_a` still work when those rubrics exist."""
 from .. import gate, project, restructure
 from ..errors import UsageError
 
-PARENT = {"voice": "audio", "music": "audio", "mix": "audio", "clips": "video_a", "version_a": "video_a"}
-PARTS = {"audio": ("voice", "music", "mix"), "video_a": ("clips", "version_a")}
+PARENT = project.LAYER_PARENT
+PARTS = project.STAGE_PARTS
 LAYERS = ("characters", "keyframes", "clips", "voice", "music", "mix", "version_a")
 
 
@@ -36,9 +36,16 @@ def rollup(root, layer):
     stages = project.load_state(root).get("stages", {})
     if stages.get(parent, {}).get("status") == "skipped":
         return None
-    if all(stages.get(p, {}).get("status") in ("passed", "skipped") for p in PARTS[parent]):
+    status = {p: stages.get(p, {}).get("status") for p in PARTS[parent]}
+    if all(v in ("passed", "skipped") for v in status.values()):
         project.mark_stage(root, parent, "passed", note="%s gates passed" % ", ".join(PARTS[parent]))
         return parent
+    failed = [p for p in PARTS[parent] if status[p] == "failed"]
+    if failed:
+        project.mark_stage(root, parent, "failed", note="%s gate failed" % ", ".join(failed))
+    elif stages.get(parent, {}).get("status") == "passed":
+        waiting = [p for p in PARTS[parent] if status[p] not in ("passed", "skipped")]
+        project.mark_stage(root, parent, "made", note="gate %s again" % ", ".join(waiting))
     return None
 
 

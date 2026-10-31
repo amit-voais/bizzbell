@@ -14,6 +14,7 @@ import shutil
 from . import gate, hidrogen, ledger as ledger_mod, project, util
 from .errors import BBError, RoundsExhausted, UsageError
 
+MAX_TOKENS = 16000
 SYSTEM = (
     "You restructure one layer of a short-video project so that it passes its quality gate. You get the layer's "
     "file(s), the references it must follow, and the gate questions it failed with the judge's evidence. Fix "
@@ -128,8 +129,9 @@ def run(root, stage_id, extra=False, note=""):
     for _attempt in range(2):
         msg = prompt if not err else prompt + "\n\nYour previous reply was rejected: %s. Reply again." % err
         reply = led.call("chat", lambda: hidrogen.chat(msg, model, system_prompt=SYSTEM, temperature=0.3,
-                                                       max_tokens=16000, json_mode=True),
-                         model=model, purpose="restructure %s round %d" % (stage_id, used + 1))
+                                                       max_tokens=MAX_TOKENS, json_mode=True),
+                         model=model, purpose="restructure %s round %d" % (stage_id, used + 1),
+                         quote_params={"max_tokens": MAX_TOKENS, "chars": len(msg) + len(SYSTEM)})
         try:
             new, changes = _validate(hidrogen.parse_json_text(reply["text"]), wanted)
             break

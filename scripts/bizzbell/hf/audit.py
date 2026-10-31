@@ -11,6 +11,7 @@ fall back to the same system fonts, and the result records whether the named fon
 import html
 import json
 import os
+import pathlib
 import re
 import shutil
 import subprocess
@@ -110,6 +111,12 @@ def _families(page):
     return sorted(set(f.replace("+", " ") for f in fams))
 
 
+def file_url(path):
+    """A percent-encoded file:// URL, so '#', '?', spaces and non-ASCII letters in a folder name stay part of the
+    path instead of starting a fragment or a query."""
+    return pathlib.Path(os.path.abspath(path)).as_uri()
+
+
 def bounds(folder, ratio, timeout=120):
     """Headless DOM bounds check of one ratio's composition. Returns {ok, checked, elements, issues, fonts}."""
     ratio = formats.name(ratio)
@@ -120,7 +127,7 @@ def bounds(folder, ratio, timeout=120):
     m = re.search(r'data-duration="([0-9.]+)"', page)
     cfg = {"w": f["w"], "h": f["h"], "safe": list(formats.safe_box(ratio)), "tol": TOLERANCE_PX,
            "duration": float(m.group(1)) if m else 1e9, "fonts": _families(page)}
-    base = '<base href="file://%s/">' % os.path.abspath(folder)
+    base = '<base href="%s/">' % file_url(folder)
     page = page.replace("<head>", "<head>\n" + base, 1)
     page = page.replace("</body>", "<script>%s</script>\n</body>" % (AUDIT_JS % {"cfg": json.dumps(cfg)}), 1)
     chrome = runner.browser_path()
@@ -132,11 +139,15 @@ def bounds(folder, ratio, timeout=120):
                "--no-default-browser-check", "--mute-audio", "--allow-file-access-from-files",
                "--user-data-dir=%s" % os.path.join(work, "profile"), "--force-device-scale-factor=1",
                "--window-size=%d,%d" % (f["w"], f["h"]), "--virtual-time-budget=20000",
-               "--dump-dom", "file://" + audit_html]
+               "--dump-dom", file_url(audit_html)]
         try:
-            r = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, stdin=subprocess.DEVNULL)
+            r = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, stdin=subprocess.DEVNULL,
+                               env=runner.env())
         except subprocess.TimeoutExpired:
-            raise BBError("the DOM bounds check timed out after %d s" % timeout)
+            hint = "" if runner.headless_shell(chrome) else (
+                " with the full Chrome at %s; it needs chrome-headless-shell: run npx -y hyperframes@%s browser "
+                "ensure --force, or set HYPERFRAMES_BROWSER_PATH to a chrome-headless-shell" % (chrome, runner.pin()))
+            raise BBError("the DOM bounds check timed out after %d s%s" % (timeout, hint))
     finally:
         shutil.rmtree(work, ignore_errors=True)
     m = re.search(r'<pre id="bb-audit-out">(.*?)</pre>', r.stdout or "", re.S)

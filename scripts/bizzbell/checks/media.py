@@ -66,12 +66,13 @@ def _target_aspect(ctx, path):
     m = re.search(r"(\d+)x(\d+)", os.path.basename(path))
     if m and m.group(1) + ":" + m.group(2) in ASPECTS:
         return m.group(1) + ":" + m.group(2)
-    return _screenplay(ctx).get("aspect") or ctx.state.get("aspect") or "9:16"
+    # project.json first, as the generators use it (media/screenplay.load); screenplay.json only as a fallback
+    return ctx.state.get("aspect") or _screenplay(ctx).get("aspect") or "9:16"
 
 
 @check("media_aspect")
 def media_aspect(ctx, files=None, tolerance=0.03):
-    """Every image / video is in its aspect: the NxM in its file name, else the screenplay's master aspect."""
+    """Every image / video is in its aspect: the NxM in its file name, else the project's master aspect."""
     paths = _files(ctx, files, VIDEO + IMAGE)
     if not paths:
         return "no", "no image or video files to check"
@@ -123,21 +124,19 @@ def shot_media_long_enough(ctx, folder="clips", ext=".mp4", kinds=("live",)):
             bad.append("%s missing" % s["id"])
         elif probe(p)["duration"] + 0.05 < need:
             bad.append("%s shorter than %.1f s" % (s["id"], need))
-    if bad:
-        return ("partly" if len(bad) < len(shots) else "no"), "; ".join(bad[:6])
+    if bad:      # a missing or short clip leaves a hole in the film: never "partly"
+        return "no", "; ".join(bad[:6])
     return "yes", "all %d shots have a long enough %s/<id>%s" % (len(shots), folder, ext)
 
 
 def loudness(path):
-    """(integrated LUFS, true peak dBTP) via ffmpeg loudnorm analysis."""
-    r = subprocess.run([_need("ffmpeg"), "-hide_banner", "-nostats", "-i", path, "-af",
-                        "loudnorm=I=-14:TP=-1:print_format=json", "-f", "null", "-"],
-                       capture_output=True, text=True, timeout=300)
-    m = re.search(r"\{[^{}]*\"input_i\"[^{}]*\}", r.stderr or "")
-    if not m:
-        raise RuntimeError("ffmpeg loudnorm gave no reading for %s" % os.path.basename(path))
-    data = json.loads(m.group(0))
-    return float(data["input_i"]), float(data["input_tp"])
+    """(integrated LUFS, true peak dBTP), measured with the same ebur128 meter `bb mix` normalises and reports
+    with (media/ff.py), so a mix that bb mix calls OK is read the same way by the gate."""
+    from ..media import ff
+    m = ff.loudness(path)
+    if m.get("I") is None or m.get("TP") is None:
+        raise RuntimeError("ffmpeg ebur128 gave no reading for %s (silent?)" % os.path.basename(path))
+    return float(m["I"]), float(m["TP"])
 
 
 @check("audio_loudness")

@@ -123,6 +123,8 @@ def full_prompt(root, sp, key, prompt, refs, fix=""):
 
 def make(root, names=(), dry_run=False, rebuild_prompts=False, redo=False, fix="", extra=0, judge=True, log=print):
     """Make the sheets and plates that are missing or whose prompt changed. Returns {key: item} (or the plan)."""
+    if not dry_run:
+        project.require_done(root, "characters")
     sp = screenplay.load(root)
     prompts = store.sync_prompts(root, D, build_prompts(root, sp), rebuild=rebuild_prompts)
     keys = resolve(sp, names)
@@ -168,9 +170,10 @@ def _make_one(root, sp, key, prompt, ph, refs, aspect, model, ms, fix, extra, ju
 
     def generate(n, fx):
         text = full_prompt(root, sp, key, prompt, refs, fx)
+        idem = store.idem(root, "image", key, ph, n, fx)
         png, _resp = paid.call(root, "image", lambda: hidrogen.image(
-            text, abs_refs, aspect=aspect, size=ms["image_size"], model=model,
-            idem=store.idem(root, "image", key, ph, n, fx)), model=model, purpose="%s take %d" % (key, n),
+            text, abs_refs, aspect=aspect, size=ms["image_size"], model=model, idem=idem),
+            model=model, purpose="%s take %d" % (key, n), ref=idem,
             quote_params={"count": 1, "size": ms["image_size"], "aspect_ratio": aspect})
         out = os.path.join(D, "_takes", "%s_t%d.png" % (safe(key.replace(":", "_")), n))
         store.write_bytes(os.path.join(root, out), png)

@@ -11,7 +11,7 @@
     {"id": "CH1", "text": "Is characters/bible.md present and not empty?", "check": "files_exist", "args": {"files": ["characters/bible.md"]}},
     {"id": "CH2", "text": "Are the screenplay's character, wardrobe and location blocks word for word in characters/bible.md?", "weight": 2, "check": "bible_blocks_match"},
     {"id": "CH3", "text": "Does every real person in the bibles have a CONSENT.md naming them, the film, channels, duration and a date?", "weight": 3, "hard": true, "check": "consent_for_real_faces"},
-    {"id": "CH4", "text": "Does every character have a sheet and every location a plate?", "weight": 2, "check": "sheets_cover_cast"},
+    {"id": "CH4", "text": "Does every character have a sheet and every location a plate?", "weight": 2, "hard": true, "check": "sheets_cover_cast"},
     {"id": "CH13", "text": "Does every sheet show four views of the same person (head front, head three-quarter, head profile, full body)?", "weight": 2, "evidence": "Name each sheet and the views it shows."},
     {"id": "CH5", "text": "Does each sheet match its bible: face, skin, hair, build and the fixed details?", "weight": 3, "evidence": "Name any detail that differs."},
     {"id": "CH6", "text": "Does each sheet show the wardrobe its bible names?", "weight": 2, "evidence": "Name the garments seen."},

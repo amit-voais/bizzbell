@@ -57,6 +57,8 @@ def plan_seconds(ms, slot_len):
 
 def make(root, shots=(), dry_run=False, rebuild_prompts=False, redo=False, fix="", extra=0, judge=True, log=print):
     """Make a clip for every live shot that has a keyframe. Returns {shot: item}, the plan, or {"skipped": ...}."""
+    if not dry_run:
+        project.require_done(root, "video_a")
     sp = screenplay.load(root)
     prompts = store.sync_prompts(root, D, build_prompts(sp), rebuild=rebuild_prompts)
     live = sp.live_shots()
@@ -119,10 +121,11 @@ def _make_one(root, sp, shot, prompt, ph, kf, model, ms, seconds, slot_len, fix,
 
     def generate(n, fx):
         text = prompt + (("\nIMPORTANT: " + fx) if fx else "")
+        key = store.idem(root, "video", sid, ph, n, fx)
         mp4, _job = paid.call(root, "video", lambda: hidrogen.video(
             text, first_frame=os.path.join(root, kf), aspect=sp.aspect, resolution=ms["resolution"],
-            seconds=seconds, model=model, idem=store.idem(root, "video", sid, ph, n, fx)),
-            model=model, purpose="clip %s take %d" % (sid, n), units=seconds,
+            seconds=seconds, model=model, idem=key),
+            model=model, purpose="clip %s take %d" % (sid, n), units=seconds, ref=key,
             quote_params={"seconds": seconds, "resolution": ms["resolution"], "aspect_ratio": sp.aspect})
         out = os.path.join(D, "raw", "%s_t%d.mp4" % (sid, n))
         store.write_bytes(os.path.join(root, out), mp4)

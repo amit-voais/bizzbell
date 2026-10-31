@@ -15,6 +15,32 @@ from . import ff, judging, paid, screenplay, store, takes
 
 D = os.path.join("audio", "voice")
 
+# Hidrogen's stock studio voices (voice-studio), by how they sound. `bb voice list` prints them.
+STOCK = {
+    "female": ("priya", "meera", "kavya", "tara", "isha", "anya", "diya", "nisha", "riya", "sana", "asha", "zoya",
+               "gauri"),
+    "male": ("arjun", "dev", "raj", "veer", "kabir", "rohan", "aman", "vikram", "karan", "aditya", "yash", "neel",
+             "sahil", "manav", "ishaan", "arnav"),
+}
+AUDITION_SIZE = 3
+
+
+def stock_gender(name):
+    """"female", "male" or None for a voice name."""
+    for g, names in STOCK.items():
+        if (name or "").lower() in names:
+            return g
+    return None
+
+
+def default_candidates(name, gender=None, n=AUDITION_SIZE):
+    """`name` plus the next stock voices of the same kind (screenplay voice.gender, else the kind of `name`)."""
+    g = (gender or "").lower()
+    g = g if g in STOCK else (stock_gender(name) or "female")
+    out = [name] if name else []
+    out += [v for v in STOCK[g] if v not in out]
+    return out[:n]
+
 
 def voice_name(root):
     reg = store.load_registry(root, D)
@@ -64,20 +90,23 @@ def audio_ok(path, min_s=0.2):
 
 
 def _tts_call(root, text, voice, model, style, purpose, idem_parts):
+    key = store.idem(root, *idem_parts)
     audio, _meta = paid.call(root, "voice", lambda: hidrogen.tts(text, voice=voice, model=model, style=style,
-                                                                 fmt="wav", idem=store.idem(root, *idem_parts)),
-                             model=model, purpose=purpose, quote_params={"chars": len(text), "voice": voice})
+                                                                 fmt="wav", idem=key),
+                             model=model, purpose=purpose, quote_params={"chars": len(text), "voice": voice}, ref=key)
     return audio
 
 
 # ---------------------------------------------------------------- audition
 def audition(root, voices=(), text=None, dry_run=False, judge=True, redo=False, log=print):
     """TTS the audition text in each voice, judge each, choose the best. Returns {"ranking", "chosen"} or the plan."""
+    if not dry_run:
+        project.require_done(root, "audio")
     sp = screenplay.load(root)
     v = sp.voice()
     settings = project.load_settings(root)
     voices = list(voices) or list(v.get("candidates") or settings.get("voice", {}).get("candidates") or []) or \
-        [settings.get("voice", {}).get("name") or "priya"]
+        default_candidates(v.get("name") or settings.get("voice", {}).get("name") or "priya", v.get("gender"))
     text = text or v.get("audition_text") or " ".join(l["tts"] for l in sp.lines[:2])
     if not text:
         raise UsageError("no audition text: add voice.audition_text or VO lines to screenplay.json")
@@ -133,6 +162,8 @@ def audition(root, voices=(), text=None, dry_run=False, judge=True, redo=False, 
 def make_takes(root, lines=(), dry_run=False, rebuild_prompts=False, redo=False, fix="", extra=0, judge=True,
                log=print):
     """A judged take per VO line (retakes up to max_takes). Returns {line: item} or the plan."""
+    if not dry_run:
+        project.require_done(root, "audio")
     sp = screenplay.load(root)
     if not sp.lines:
         raise UsageError("the screenplay has no VO lines (rows with \"vo\", or \"lines\")")

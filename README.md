@@ -43,6 +43,8 @@ python3 scripts/bb.py doctor        # Python, ffmpeg, Node, the key, the gateway
 ```
 
 The key is saved to `~/.config/hidrogen/key.env` (mode 600). `HIDROGEN_API_KEY` in the environment works too.
+To pipe it in from a password manager instead of typing it, use `--stdin` (nothing is echoed):
+`<your password manager's read command> | python3 scripts/bb.py key --stdin`.
 Get a key and top up the wallet on the Hidrogen dashboard (api.hidrogen.in).
 
 ## First run
@@ -74,9 +76,11 @@ Bizzbell itself is free. The AI work is paid from **your Hidrogen wallet**, in I
 
 - **Nothing is spent before you approve a budget.** You give a cap in INR; every paid call is reserved in a local
   ledger before it is sent, and a call that would pass the cap is refused. The cap is raised only when you say so.
-- **Prices are asked, not guessed.** Before the budget, the agent asks Hidrogen for a quote (`/v1/media/quote`)
-  for each stage; where a quote is not available it uses the estimate rates in your project's `bizzbell.json` and
-  says so. What was actually charged is read from each reply.
+- **Prices are asked, not guessed.** Before the budget, the agent runs `bb budget estimate`, which asks Hidrogen
+  for a quote (`/v1/media/quote`, free) for each kind of call and shows a likely and a worst-case cost per stage;
+  where a quote is not available it uses the estimate rates in your project's `bizzbell.json` and says so. What
+  was actually charged is read from each reply. A text call (a gate's judge, a rewrite) is reserved at its longest
+  possible reply, so even one long answer cannot take the spend past the cap.
 - **What drives the cost:** video seconds (Version A) cost the most, then images (sheets and keyframes), then the
   judge passes of the quality gates, voice and music. Retakes are capped by `max_takes` (default 3) and rewrites by
   three rounds per layer.
@@ -122,13 +126,13 @@ Add `--debug` to any command for a traceback (keys are always redacted).
 
 ## Contributing
 
-Everything runs offline against a mock Hidrogen server, so no key and no money are needed:
+Everything runs against a mock Hidrogen server, so no key and no money are needed:
 
 ```
-python3 -m unittest discover -s tests -v
+python3 -m unittest discover -s tests -v  # offline: no network at all
+BB_RENDER_TESTS=1 python3 -m unittest discover -s tests   # also the real HyperFrames renders (npx, npm registry)
 python3 scripts/bb.py mock --port 0       # a mock gateway for trying commands by hand
 python3 scripts/bb.py demo --mock         # the whole pipeline end to end, with small real video files
-BB_SKIP_RENDER_TESTS=1 python3 -m unittest discover -s tests   # quick: skips the real HyperFrames renders
 ```
 
 Point the client at the mock with `HIDROGEN_API_URL=<the printed URL>` and the fake key

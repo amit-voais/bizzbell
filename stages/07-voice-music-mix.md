@@ -12,13 +12,18 @@ have passed.
 ## Voice
 
 ```
-python3 scripts/bb.py voice audition -p <folder>     # a few stock voices read the same line; judged; show the user the top two
+python3 scripts/bb.py voice list                     # the stock voices, female and male
+python3 scripts/bb.py voice audition priya meera kavya -p <folder>   # each reads the same line; judged; show the user the top two
 python3 scripts/bb.py voice takes -p <folder>        # one take per line; checked and judged; retakes up to max_takes
 python3 scripts/bb.py voice place -p <folder>        # lines placed at lines[].at into audio/vo.wav
 python3 scripts/bb.py gate voice -p <folder>
 ```
 
 - The voice is a synthetic stock voice (`voice.name`, default `priya`). Never a clone of a real person.
+- Audition three or more voices that fit the narrator (a man's voice for a male narrator). Name them on the command
+  line, or put them in `screenplay.json` `voice.candidates` (and the words in `voice.audition_text`); with neither,
+  `voice.name` and the next two stock voices like it are auditioned. The best-scored voice is chosen; show the user
+  the top two and switch with `bb voice audition <name>` if they prefer the other.
 - It reads `lines[].tts`: Devanagari for Hindi and Hinglish, so the pronunciation is native; captions use
   `lines[].text` in Roman script.
 - Word for word: no added, dropped or changed word (hard). Each line ends inside its shot.

@@ -2,8 +2,9 @@
 the screenplay with the final rubric, and write out/report.md.
 
 Version A (out/A) gets 9:16, 1:1 and 16:9 from the same shots (and 4:5 when captions are burned with libass,
-which wraps them inside the frame). Version B (out/B) is rendered by HyperFrames in every size already; when one
-of its required sizes is missing, `bb version_b` is run again for all sizes. Each made version gets
+which wraps them inside the frame); a size older than the master (Version A was built again) is built again.
+Version B (out/B) is rendered by HyperFrames in every size already; when one of its required sizes is missing or
+older than the latest composition build, every size is rendered and checked again (text and repeatability). Each made version gets
 <slug>_<A|B>_share.mp4: H.264 + AAC, at most 720 px on the short side, under 25 MB.
 
 The final gate runs once per version (gate ids final_a, final_b) with a rubric derived from rubrics/final.json
@@ -55,26 +56,48 @@ def master_aspect(root):
     return project.load_state(root).get("aspect") or "9:16"
 
 
+def _older(path, than):
+    """True when `path` was written before the file `than` (a size left over from an earlier master/build)."""
+    return os.path.isfile(than) and os.path.getmtime(path) + 1e-3 < os.path.getmtime(than)
+
+
+def stale_sizes(root, version):
+    """Aspects on disk that are older than what they are made from: Version A's master, Version B's last build."""
+    have = sizes_present(root, version)
+    if version == "A":
+        src = have.get(master_aspect(root))
+        if not src:
+            return []
+        return [a for a, rel in have.items() if rel != src and _older(os.path.join(root, rel),
+                                                                      os.path.join(root, src))]
+    build = os.path.join(root, "hf", "build.json")
+    return [a for a, rel in have.items() if _older(os.path.join(root, rel), build)]
+
+
 # ---------------------------------------------------------------- sizes
 def make_sizes_a(root, log=print):
     """Build every missing Version A size from the same shots. Returns the aspects made now."""
     from .media import version_a
     want = list(REQUIRED) + (["4:5"] if ff.has_filter("subtitles") else [])
     have = sizes_present(root, "A")
+    old = stale_sizes(root, "A")
     done = []
     for aspect in want:
-        if aspect in have:
+        if aspect in have and aspect not in old:
             continue
-        log("Version A %s: building from the same shots" % aspect)
+        log("Version A %s: building from the same shots%s" % (aspect, " (older than the master)" if aspect in old
+                                                               else ""))
         version_a.build(root, log=lambda *_: None, aspect=aspect)
         done.append(aspect)
     return done
 
 
 def make_sizes_b(root, quality="draft", log=print):
-    """Render Version B again in every size when a required one is missing. Returns the aspects made now."""
+    """Render Version B again in every size when a required one is missing or older than the latest build, with
+    the same checks as `bb version_b` (cut-off text and repeatability). Returns the aspects made now."""
     have = sizes_present(root, "B")
-    missing = [a for a in REQUIRED if a not in have]
+    missing = [a for a in REQUIRED if a not in have] + ["%s (older than the build)" % a
+                                                       for a in stale_sizes(root, "B")]
     if not missing:
         return []
     from .hf import compose, formats, qa, render, runner
@@ -88,7 +111,7 @@ def make_sizes_b(root, quality="draft", log=print):
     fps = int((util.read_json(os.path.join(root, "hf", "build.json"), {}) or {}).get("fps", 30))
     done = []
     for r in ratios:
-        rec = qa.check_ratio(root, r, with_repeat=False)
+        rec = qa.check_ratio(root, r, with_repeat=True)
         if r not in formats.REQUIRED and not rec.get("text_ok"):
             qa.record_video(root, r, None, skipped="its text does not fit the 4:5 safe zone")
             continue

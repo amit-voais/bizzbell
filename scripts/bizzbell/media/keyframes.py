@@ -79,7 +79,7 @@ def refs_for(root, sp, shot, reg_chars, reg_kf):
             missing.append("plate:" + shot["location"])
     prev = previous_approved(root, sp, shot["id"], reg_kf)
     if prev:
-        out.append((prev, "the previous shot's approved keyframe: same people, clothes and light"))
+        out.append((prev, "the previous approved keyframe in this place: same people, clothes and light"))
     for r in shot["refs"]:
         p, label = (r[0], r[1]) if isinstance(r, (list, tuple)) and len(r) > 1 else (str(r), "a reference")
         if not os.path.exists(os.path.join(root, p)):
@@ -89,9 +89,16 @@ def refs_for(root, sp, shot, reg_chars, reg_kf):
 
 
 def previous_approved(root, sp, sid, reg_kf):
-    live = [s["id"] for s in sp.live_shots()]
-    i = live.index(sid)
-    for prev in reversed(live[:i]):
+    """The latest approved keyframe of an earlier live shot in the SAME location (a new place has its own light
+    and, often, other clothes: the first shot there gets no previous keyframe)."""
+    live = sp.live_shots()
+    ids = [s["id"] for s in live]
+    i = ids.index(sid)
+    loc = live[i].get("location")
+    for s in reversed(live[:i]):
+        if s.get("location") != loc:
+            continue
+        prev = s["id"]
         it = reg_kf["items"].get(prev, {})
         f = it.get("file")
         if it.get("status") in store.GOOD and f and os.path.exists(os.path.join(root, f)):
@@ -115,6 +122,8 @@ def _real_people(sp, shot):
 
 def make(root, shots=(), dry_run=False, rebuild_prompts=False, redo=False, fix="", extra=0, judge=True, log=print):
     """Make the keyframes that are missing, rejected or whose prompt changed. Returns {shot: item} (or the plan)."""
+    if not dry_run:
+        project.require_done(root, "keyframes")
     sp = screenplay.load(root)
     prompts = store.sync_prompts(root, D, build_prompts(sp), rebuild=rebuild_prompts)
     live = sp.live_shots()
@@ -170,9 +179,10 @@ def _make_one(root, sp, shot, prompt, ph, refs, model, ms, fix, extra, judge, lo
 
     def generate(n, fx):
         text = full_prompt(prompt, refs, fx)
+        key = store.idem(root, "keyframe", sid, ph, n, fx)
         png, _resp = paid.call(root, "image", lambda: hidrogen.image(
-            text, abs_refs, aspect=sp.aspect, size=ms["image_size"], model=model,
-            idem=store.idem(root, "keyframe", sid, ph, n, fx)), model=model, purpose="keyframe %s take %d" % (sid, n),
+            text, abs_refs, aspect=sp.aspect, size=ms["image_size"], model=model, idem=key),
+            model=model, purpose="keyframe %s take %d" % (sid, n), ref=key,
             quote_params={"count": 1, "size": ms["image_size"], "aspect_ratio": sp.aspect})
         out = os.path.join(D, "_takes", "%s_t%d.png" % (sid, n))
         store.write_bytes(os.path.join(root, out), png)

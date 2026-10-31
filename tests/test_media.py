@@ -30,7 +30,7 @@ class PipelineTests(MediaCase):
         self.assertEqual(len(kf["references"]), 3)
         self.assertIn(SCREENPLAY["bibles"]["characters"]["COACH"]["text"], kf["prompt"])
         self.assertIn(SCREENPLAY["bibles"]["props"]["BOTTLE"]["text"], kf["prompt"])
-        self.assertIn("Image 3: the previous shot's approved keyframe", kf["prompt"])
+        self.assertIn("Image 3: the previous approved keyframe in this place", kf["prompt"])
         reg = store.load_registry(root, "keyframes")["items"]
         self.assertEqual({k: v["status"] for k, v in reg.items()}, {"S01": "accepted", "S02": "accepted"})
         self.assertTrue(layers.run_gate(root, "keyframes")[0]["passed"])

@@ -17,9 +17,12 @@ python3 scripts/bb.py gate keyframes -p <folder>
 ```
 
 The references for each shot are its characters' sheets, its location's plate and the previous approved keyframe
-(continuity), plus any `refs` the shot lists. The prompt is the shot's `keyframe_prompt` and camera, its bibles
+in the same location (continuity; the first shot in a new place gets none, since its light and clothes may
+differ), plus any `refs` the shot lists. The prompt is the shot's `keyframe_prompt` and camera, its bibles
 verbatim, and the continuity rules. Each take is checked locally and judged with this rubric's per-item questions;
-a failed take is made again with the judge's fix, up to `max_takes`, then the best one is kept and flagged.
+a failed take is made again with the judge's fix, up to `max_takes`, then the best one is kept and flagged. A
+flagged or missing keyframe fails the layer gate (hard): show it to the user, then `bb keyframes approve <shot>`
+(they accept it) or `bb keyframes reject <shot> --note "..."` and make it again.
 
 ## Rules
 

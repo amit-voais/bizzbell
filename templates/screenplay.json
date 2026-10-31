@@ -25,7 +25,9 @@
    "PRODUCT": {"name": "<product>", "text": "<PRODUCT: shape, size, colour, material; no print, no logo and no writing on it.>"}
   }
  },
- "voice": {"name": "priya", "style": "<who is speaking, to whom, in what mood; not an announcer>"},
+ "voice": {"name": "priya", "gender": "female", "candidates": ["priya", "meera", "kavya"],
+           "audition_text": "<one or two VO lines in the voice's script>",
+           "style": "<who is speaking, to whom, in what mood; not an announcer>"},
  "music": {"prompt": "<mood, instruments, tempo, length; no vocals, no choir, no humming>", "instrumental": true,
            "seconds": 4},
  "captions": {"max_chars": 42, "style": "<colour, weight, position inside the safe zone>"},

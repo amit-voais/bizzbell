@@ -1,8 +1,10 @@
 """Version B, for real: a 3-second example built, checked and rendered headless with the pinned HyperFrames.
 
-Skipped cleanly when npx / the pinned HyperFrames / ffmpeg cannot run (offline, no Node), or when
-BB_SKIP_RENDER_TESTS=1. Takes about two minutes. $HOME is left alone here on purpose: npx and HyperFrames keep
-their caches (the package, its headless Chrome, fonts) under it. No Hidrogen call goes anywhere but the mock."""
+Opt-in, so the default `python3 -m unittest` stays offline (npx checks the npm registry on every call): set
+BB_RENDER_TESTS=1 to run them. Skipped cleanly when npx / the pinned HyperFrames / ffmpeg cannot run (offline,
+no Node), or when BB_SKIP_RENDER_TESTS=1. Takes about three minutes. $HOME is left alone here on purpose: npx
+and HyperFrames keep their caches (the package, its headless Chrome, fonts) under it. No Hidrogen call goes
+anywhere but the mock."""
 import os
 import shutil
 import subprocess
@@ -23,6 +25,8 @@ RATIOS = ["9x16", "1x1", "16x9"]
 def _skip_reason():
     if os.environ.get("BB_SKIP_RENDER_TESTS"):
         return "BB_SKIP_RENDER_TESTS is set"
+    if os.environ.get("BB_RENDER_TESTS") != "1":
+        return "real HyperFrames renders are opt-in: BB_RENDER_TESTS=1 (they use npx and the npm registry)"
     if not HAS_FFMPEG:
         return "ffmpeg is not installed"
     ok, why = runner.available(None)
