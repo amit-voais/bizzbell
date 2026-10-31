@@ -1,13 +1,15 @@
 """bb restructure <stage>: rewrite a failed layer with the restructure model (max 3 rounds)."""
 from .. import project, restructure
 from ..cli import add_project_arg
+from ..media.layers import LAYERS
 
 NAME = "restructure"
 HELP = "rewrite a layer that failed its gate (max 3 rounds, then ask the user)"
 
 
 def register(p):
-    p.add_argument("stage", choices=[s["id"] for s in project.STAGES])
+    p.add_argument("stage", choices=project.STAGE_IDS + [x for x in LAYERS if x not in project.STAGE_IDS] +
+                   ["final_a", "final_b"])
     add_project_arg(p)
     p.add_argument("--extra", action="store_true",
                    help="allow one more round past the limit - ONLY after the user said yes")

@@ -1,0 +1,27 @@
+{
+  "stage": "screenplay",
+  "version": 1,
+  "title": "Screenplay, every second",
+  "layer": {"kind": "text", "files": ["screenplay.md", "screenplay.json"]},
+  "references": ["story_humanized.md", "brief.md", "research.md"],
+  "pass_score": 95,
+  "judge_notes": "screenplay.json is the source of truth (schema: templates/screenplay.json); screenplay.md is the readable copy. Live shots are made by AI image then image-to-video; graphic shots are built in HyperFrames. Every word on screen is an overlay, never inside an AI frame.",
+  "restructure": {"targets": ["screenplay.md", "screenplay.json"]},
+  "questions": [
+    {"id": "SP1", "text": "Does every second from 0 to the end have exactly one row?", "weight": 3, "hard": true, "check": "rows_cover_every_second"},
+    {"id": "SP2", "text": "Do the shots run from 0 to the end with no gap or overlap, and does every row name the shot playing?", "weight": 2, "check": "shots_cover_timeline"},
+    {"id": "SP3", "text": "Is every live shot 1-3 s long (graphics at most 4 s)?", "weight": 2, "check": "shot_lengths"},
+    {"id": "SP4", "text": "Does the voice-over in lines[] say the humanized story's spoken lines word for word?", "weight": 3, "hard": true, "check": "vo_word_for_word"},
+    {"id": "SP5", "text": "Do the rows carry the same voice-over words as lines[], second by second?", "weight": 2, "check": "rows_vo_match_lines"},
+    {"id": "SP6", "text": "Is every line timed inside the film, without overlaps, with caption text and spoken text?", "check": "lines_timed"},
+    {"id": "SP7", "text": "Does every caption fit the caption length limit?", "check": "captions_short"},
+    {"id": "SP8", "text": "Is every live shot's prompt free of requests to draw text, a logo, an emblem or a number plate?", "weight": 3, "hard": true, "check": "prompts_no_text"},
+    {"id": "SP9", "text": "Is every number on screen found in research.md or the brief, or marked Sample?", "weight": 2, "hard": true, "check": "numbers_sourced"},
+    {"id": "SP10", "text": "Does every live shot have a keyframe prompt, a motion, a camera and bibles that exist?", "weight": 2, "check": "live_shots_complete"},
+    {"id": "SP11", "text": "Are the bibles in screenplay.md word for word the same as in screenplay.json?", "check": "bibles_verbatim"},
+    {"id": "SP12", "text": "Does every live shot ask for one small action that fits its length, with nobody entering or leaving frame?", "weight": 2, "evidence": "Quote the busiest motion."},
+    {"id": "SP13", "text": "Are hands, phones and products described so they come out right (five fingers, a real grip, phone screens away from the lens)?", "evidence": "Quote a hand or phone description."},
+    {"id": "SP14", "text": "Does every sound effect have its picture in the same second, and does the music column describe a voice-free bed?", "evidence": "Quote one sfx with its screen text."},
+    {"id": "SP15", "text": "Is every claim on screen or in the voice-over found in research.md's claims list?", "weight": 3, "hard": true, "evidence": "Quote each claim and its research claim."}
+  ]
+}

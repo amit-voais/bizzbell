@@ -1,0 +1,581 @@
+{
+ "bizzbell": 1,
+ "title": "Ghar jaisa Diwali box",
+ "slug": "bakery-diwali",
+ "lang": "hinglish",
+ "aspect": "9:16",
+ "fps": 24,
+ "duration": 20,
+ "continuity": [
+  "References first: every keyframe is made from the character sheets and location plates listed in the shot's refs, never from text alone.",
+  "Paste the bibles verbatim into every prompt: the shot's characters, then its location, then its props.",
+  "One evening, one light: warm tungsten indoors, deep blue dusk outside, in every home and door shot.",
+  "Screen direction: Rani is always frame-left in the two-shots, Sunita frame-right.",
+  "Rani's thread bracelet is on her right wrist in every hand close-up.",
+  "No text, logo, emblem or number plate inside any AI frame. Every word is an overlay."
+ ],
+ "bibles": {
+  "characters": {
+   "RANI": {
+    "name": "Rani",
+    "real_person": false,
+    "photos": [],
+    "text": "RANI (34): Indian woman, 34, warm medium-brown skin, round face, a small dark mole above the left corner of her lip, black hair in a low loose bun with a few strands free at the temples, thin arched eyebrows, dark brown eyes, small gold stud earrings, a thin red-and-gold thread bracelet on her right wrist. Average build, about 5 ft 3 in. Wardrobe (whole film): mustard-yellow cotton kurta with a plain round neck and three-quarter sleeves, white cotton churidar, no dupatta, barefoot at home."
+   },
+   "SUNITA": {
+    "name": "Sunita",
+    "real_person": false,
+    "photos": [],
+    "text": "SUNITA (58): Indian woman, 58, wheatish skin, oval face with soft laugh lines, silver-grey hair in a neat low bun, rimless round glasses, a small red bindi, a thin gold chain. Slim build, about 5 ft 1 in. Wardrobe (whole film): deep-green cotton saree with a thin maroon border, plain maroon blouse, two thin gold bangles on the left wrist."
+   },
+   "BAKER": {
+    "name": "Baker",
+    "real_person": false,
+    "photos": [],
+    "text": "BAKER (hands only): a man's hands, medium-brown skin, short clean nails, a plain steel kada on the right wrist, white cotton apron sleeves rolled to the elbow. His face is never in frame."
+   }
+  },
+  "locations": {
+   "KITCHEN": {
+    "name": "Kitchen",
+    "text": "KITCHEN (small city flat, lived-in, 7 pm): pale-blue tiled wall, grey granite counter, a round steel spice box on the counter, a pressure cooker on the left burner, a window on the RIGHT with a string of warm fairy lights and one lit brass diya on the sill; warm tungsten light from a ceiling bulb, deep blue dusk outside."
+   },
+   "BAKERY": {
+    "name": "Bakery",
+    "text": "BAKERY counter: warm wooden counter, a cooling rack of round golden cookies on the left, a stack of plain kraft-paper boxes on the right, soft warm pendant light from above, background softly out of focus."
+   },
+   "DOOR": {
+    "name": "Front door",
+    "text": "DOOR (front door of the flat, 7 pm): a wooden door painted dark brown, a marigold garland over the door frame, an orange and pink rangoli on the floor outside made of flower and dot patterns only, no letters; warm light from the hall behind Rani."
+   }
+  },
+  "props": {
+   "BOX": {
+    "name": "Diwali box",
+    "text": "THE DIWALI BOX: a square plain kraft-paper box about 20 cm wide, lid off, a thin red satin ribbon, twelve round golden cookies topped with chopped cashew and pistachio in a 3 by 4 grid; no print, no logo and no writing anywhere on the box."
+   }
+  }
+ },
+ "voice": {
+  "name": "priya",
+  "style": "A warm woman in her thirties telling a friend about her Diwali in casual Hinglish; relaxed, small natural pauses; not an announcer."
+ },
+ "music": {
+  "prompt": "Warm festive Indian instrumental: soft sitar, light tabla and santoor, gentle and homely, 20 seconds, no vocals, no choir, no humming.",
+  "instrumental": true,
+  "seconds": 20
+ },
+ "captions": {
+  "max_chars": 42,
+  "style": "white, bold, one line, lower third inside the safe zone"
+ },
+ "shots": [
+  {
+   "id": "S01",
+   "start": 0,
+   "end": 2,
+   "kind": "live",
+   "source": "keyframe",
+   "screen": "Rani at the kitchen counter counts on the fingers of her right hand, worried.",
+   "keyframe_prompt": "Medium close-up at chest height: Rani stands behind the kitchen counter, placed left of centre, facing camera three-quarters, her right hand raised at chest height with three fingers folded as she counts, a worried small frown. Fairy lights soft behind her on the right.",
+   "motion": "She folds one more finger and lets out a small sigh; her shoulders drop a little. She stays in place.",
+   "camera": "handheld, slight sway, 35 mm look",
+   "characters": [
+    "RANI"
+   ],
+   "location": "KITCHEN",
+   "props": [],
+   "refs": [],
+   "lines": [
+    "L01"
+   ]
+  },
+  {
+   "id": "S02",
+   "start": 2,
+   "end": 4,
+   "kind": "live",
+   "source": "keyframe",
+   "screen": "Rani opens a cupboard: one empty steel tray.",
+   "keyframe_prompt": "Over-the-shoulder shot from behind Rani's left shoulder: her right hand holds open a wooden kitchen cupboard door; inside, a single empty round steel tray on the middle shelf. Warm evening light from the right.",
+   "motion": "She looks at the empty tray and tilts her head slightly. The door stays open in her hand.",
+   "camera": "handheld, over the shoulder",
+   "characters": [
+    "RANI"
+   ],
+   "location": "KITCHEN",
+   "props": [],
+   "refs": [],
+   "lines": [
+    "L01",
+    "L02"
+   ]
+  },
+  {
+   "id": "S03",
+   "start": 4,
+   "end": 6,
+   "kind": "live",
+   "source": "keyframe",
+   "screen": "Rani presses two fingers to her forehead, thinking; then picks up her phone, screen away from camera.",
+   "keyframe_prompt": "Close-up, chest up: Rani at the counter, two fingers of her left hand pressed to her forehead, eyes thoughtful, her phone held in her right hand at waist height with the screen facing her, back of the phone to camera.",
+   "motion": "She lowers her hand from her forehead and lifts the phone a little, a small idea crossing her face. She stays in place.",
+   "camera": "handheld, slow push-in",
+   "characters": [
+    "RANI"
+   ],
+   "location": "KITCHEN",
+   "props": [],
+   "refs": [],
+   "lines": [
+    "L02"
+   ]
+  },
+  {
+   "id": "S04",
+   "start": 6,
+   "end": 8,
+   "kind": "live",
+   "source": "keyframe",
+   "screen": "At the bakery counter the baker's hands place cookies one by one into the open box.",
+   "keyframe_prompt": "Top-down close shot of the bakery counter: the baker's two hands place a round golden cookie into the open kraft-paper box, which is already half filled; the cooling rack is at the left edge of frame.",
+   "motion": "The right hand sets one cookie into its place in the grid and lifts away; the left hand steadies the box. Nothing else moves.",
+   "camera": "locked top-down",
+   "characters": [
+    "BAKER"
+   ],
+   "location": "BAKERY",
+   "props": [
+    "BOX"
+   ],
+   "refs": [],
+   "lines": [
+    "L03"
+   ]
+  },
+  {
+   "id": "S05",
+   "start": 8,
+   "end": 10,
+   "kind": "live",
+   "source": "keyframe",
+   "screen": "Close-up of the full box: twelve cookies, ribbon being tied.",
+   "keyframe_prompt": "Macro close-up of the full Diwali box from a low angle: twelve golden cookies with cashew and pistachio, the baker's fingers tying the red satin ribbon around the box at the bottom of frame.",
+   "motion": "The fingers pull the ribbon into a small bow; a few crumbs of pistachio settle. The box stays still.",
+   "camera": "slow slide left, shallow depth of field",
+   "characters": [
+    "BAKER"
+   ],
+   "location": "BAKERY",
+   "props": [
+    "BOX"
+   ],
+   "refs": [],
+   "lines": [
+    "L03"
+   ]
+  },
+  {
+   "id": "S06",
+   "start": 10,
+   "end": 12,
+   "kind": "live",
+   "source": "keyframe",
+   "screen": "At Rani's front door, Sunita takes a bite of a cookie from the open box Rani holds.",
+   "keyframe_prompt": "Medium two-shot at the front door: Rani on the left holds the open Diwali box in both hands at waist height; Sunita on the right lifts one cookie to her mouth with her right hand. Marigold garland above, rangoli on the floor.",
+   "motion": "Sunita takes one small bite and starts to chew. Both stay where they are.",
+   "camera": "handheld, eye level",
+   "characters": [
+    "RANI",
+    "SUNITA"
+   ],
+   "location": "DOOR",
+   "props": [
+    "BOX"
+   ],
+   "refs": [],
+   "lines": [
+    "L04"
+   ]
+  },
+  {
+   "id": "S07",
+   "start": 12,
+   "end": 14,
+   "kind": "live",
+   "source": "keyframe",
+   "screen": "Sunita smiles and nods at Rani; Rani smiles back, relieved.",
+   "keyframe_prompt": "Close two-shot at the front door: Sunita on the right, eyes crinkled in a warm smile, half a cookie in her right hand; Rani on the left, the box in both hands, smiling with relief.",
+   "motion": "Sunita nods twice; Rani's smile grows. Neither moves from their spot.",
+   "camera": "handheld, slow push-in",
+   "characters": [
+    "RANI",
+    "SUNITA"
+   ],
+   "location": "DOOR",
+   "props": [
+    "BOX"
+   ],
+   "refs": [],
+   "lines": [
+    "L04"
+   ]
+  },
+  {
+   "id": "G08",
+   "start": 14,
+   "end": 17,
+   "kind": "graphic",
+   "source": "graphic",
+   "screen": "Product card: the box still (from keyframe S05) with the offer as overlay text.",
+   "image": "keyframes/S05.png",
+   "graphic": {
+    "type": "card",
+    "title": "12 kaju-pista cookies",
+    "subtitle": "Hand-made",
+    "number": "Rs 499",
+    "sample": false
+   },
+   "lines": [
+    "L05"
+   ]
+  },
+  {
+   "id": "G09",
+   "start": 17,
+   "end": 20,
+   "kind": "graphic",
+   "source": "graphic",
+   "screen": "End card: bakery name, Order today, Link in bio.",
+   "graphic": {
+    "type": "endcard",
+    "title": "Gulmohar Bakery",
+    "subtitle": "Link in bio",
+    "cta": "Order today",
+    "sample": false
+   },
+   "lines": [
+    "L06"
+   ]
+  }
+ ],
+ "rows": [
+  {
+   "t": 0,
+   "shot": "S01",
+   "screen": "Rani at the kitchen counter counts on the fingers of her right hand, worried.",
+   "source": "keyframe",
+   "camera": "handheld, slight sway, 35 mm look",
+   "motion": "She folds one more finger and lets out a small sigh; her shoulders drop a little. She stays in place.",
+   "vo": "Arre yaar, Diwali mein",
+   "caption": "Arre yaar, Diwali mein",
+   "sfx": "",
+   "music": "warm sitar and tabla bed starts, low under the voice"
+  },
+  {
+   "t": 1,
+   "shot": "S01",
+   "screen": "Rani at the kitchen counter counts on the fingers of her right hand, worried.",
+   "source": "keyframe",
+   "camera": "handheld, slight sway, 35 mm look",
+   "motion": "She folds one more finger and lets out a small sigh; her shoulders drop a little. She stays in place.",
+   "vo": "bas paanch din",
+   "caption": "bas paanch din",
+   "sfx": "",
+   "music": ""
+  },
+  {
+   "t": 2,
+   "shot": "S02",
+   "screen": "Rani opens a cupboard: one empty steel tray.",
+   "source": "keyframe",
+   "camera": "handheld, over the shoulder",
+   "motion": "She looks at the empty tray and tilts her head slightly. The door stays open in her hand.",
+   "vo": "bache hain...",
+   "caption": "bache hain...",
+   "sfx": "",
+   "music": ""
+  },
+  {
+   "t": 3,
+   "shot": "S02",
+   "screen": "Rani opens a cupboard: one empty steel tray.",
+   "source": "keyframe",
+   "camera": "handheld, over the shoulder",
+   "motion": "She looks at the empty tray and tilts her head slightly. The door stays open in her hand.",
+   "vo": "Aur gift ka",
+   "caption": "Aur gift ka",
+   "sfx": "",
+   "music": ""
+  },
+  {
+   "t": 4,
+   "shot": "S03",
+   "screen": "Rani presses two fingers to her forehead, thinking; then picks up her phone, screen away from camera.",
+   "source": "keyframe",
+   "camera": "handheld, slow push-in",
+   "motion": "She lowers her hand from her forehead and lifts the phone a little, a small idea crossing her face. She stays in place.",
+   "vo": "ek bhi dabba ready",
+   "caption": "ek bhi dabba ready",
+   "sfx": "",
+   "music": ""
+  },
+  {
+   "t": 5,
+   "shot": "S03",
+   "screen": "Rani presses two fingers to her forehead, thinking; then picks up her phone, screen away from camera.",
+   "source": "keyframe",
+   "camera": "handheld, slow push-in",
+   "motion": "She lowers her hand from her forehead and lifts the phone a little, a small idea crossing her face. She stays in place.",
+   "vo": "nahi. Umm...",
+   "caption": "nahi. Umm...",
+   "sfx": "",
+   "music": ""
+  },
+  {
+   "t": 6,
+   "shot": "S04",
+   "screen": "At the bakery counter the baker's hands place cookies one by one into the open box.",
+   "source": "keyframe",
+   "camera": "locked top-down",
+   "motion": "The right hand sets one cookie into its place in the grid and lifts away; the left hand steadies the box. Nothing else moves.",
+   "vo": "Phir mila Gulmohar",
+   "caption": "Phir mila Gulmohar",
+   "sfx": "soft clink of a cookie set on cardboard (on screen)",
+   "music": "bed lifts, a light santoor line joins"
+  },
+  {
+   "t": 7,
+   "shot": "S04",
+   "screen": "At the bakery counter the baker's hands place cookies one by one into the open box.",
+   "source": "keyframe",
+   "camera": "locked top-down",
+   "motion": "The right hand sets one cookie into its place in the grid and lifts away; the left hand steadies the box. Nothing else moves.",
+   "vo": "Bakery ka box,",
+   "caption": "Bakery ka box,",
+   "sfx": "",
+   "music": ""
+  },
+  {
+   "t": 8,
+   "shot": "S05",
+   "screen": "Close-up of the full box: twelve cookies, ribbon being tied.",
+   "source": "keyframe",
+   "camera": "slow slide left, shallow depth of field",
+   "motion": "The fingers pull the ribbon into a small bow; a few crumbs of pistachio settle. The box stays still.",
+   "vo": "matlab haath se",
+   "caption": "matlab haath se",
+   "sfx": "",
+   "music": ""
+  },
+  {
+   "t": 9,
+   "shot": "S05",
+   "screen": "Close-up of the full box: twelve cookies, ribbon being tied.",
+   "source": "keyframe",
+   "camera": "slow slide left, shallow depth of field",
+   "motion": "The fingers pull the ribbon into a small bow; a few crumbs of pistachio settle. The box stays still.",
+   "vo": "bani cookies.",
+   "caption": "bani cookies.",
+   "sfx": "ribbon pulled tight (on screen)",
+   "music": ""
+  },
+  {
+   "t": 10,
+   "shot": "S06",
+   "screen": "At Rani's front door, Sunita takes a bite of a cookie from the open box Rani holds.",
+   "source": "keyframe",
+   "camera": "handheld, eye level",
+   "motion": "Sunita takes one small bite and starts to chew. Both stay where they are.",
+   "vo": "Padosan boli,",
+   "caption": "Padosan boli,",
+   "sfx": "small cookie crunch (on screen)",
+   "music": ""
+  },
+  {
+   "t": 11,
+   "shot": "S06",
+   "screen": "At Rani's front door, Sunita takes a bite of a cookie from the open box Rani holds.",
+   "source": "keyframe",
+   "camera": "handheld, eye level",
+   "motion": "Sunita takes one small bite and starts to chew. Both stay where they are.",
+   "vo": "haan,",
+   "caption": "haan,",
+   "sfx": "",
+   "music": ""
+  },
+  {
+   "t": 12,
+   "shot": "S07",
+   "screen": "Sunita smiles and nods at Rani; Rani smiles back, relieved.",
+   "source": "keyframe",
+   "camera": "handheld, slow push-in",
+   "motion": "Sunita nods twice; Rani's smile grows. Neither moves from their spot.",
+   "vo": "yeh toh ghar jaisa",
+   "caption": "yeh toh ghar jaisa",
+   "sfx": "",
+   "music": ""
+  },
+  {
+   "t": 13,
+   "shot": "S07",
+   "screen": "Sunita smiles and nods at Rani; Rani smiles back, relieved.",
+   "source": "keyframe",
+   "camera": "handheld, slow push-in",
+   "motion": "Sunita nods twice; Rani's smile grows. Neither moves from their spot.",
+   "vo": "hai na!",
+   "caption": "hai na!",
+   "sfx": "",
+   "music": ""
+  },
+  {
+   "t": 14,
+   "shot": "G08",
+   "screen": "Product card: the box still (from keyframe S05) with the offer as overlay text.",
+   "source": "graphic",
+   "camera": "static graphic, gentle scale",
+   "motion": "text animates in, then holds",
+   "vo": "Barah cookies,",
+   "caption": "Barah cookies,",
+   "sfx": "",
+   "music": "bed holds, steady"
+  },
+  {
+   "t": 15,
+   "shot": "G08",
+   "screen": "Product card: the box still (from keyframe S05) with the offer as overlay text.",
+   "source": "graphic",
+   "camera": "static graphic, gentle scale",
+   "motion": "text animates in, then holds",
+   "vo": "chaar sau",
+   "caption": "chaar sau",
+   "sfx": "",
+   "music": ""
+  },
+  {
+   "t": 16,
+   "shot": "G08",
+   "screen": "Product card: the box still (from keyframe S05) with the offer as overlay text.",
+   "source": "graphic",
+   "camera": "static graphic, gentle scale",
+   "motion": "text animates in, then holds",
+   "vo": "ninyanve rupaye.",
+   "caption": "ninyanve rupaye.",
+   "sfx": "",
+   "music": ""
+  },
+  {
+   "t": 17,
+   "shot": "G09",
+   "screen": "End card: bakery name, Order today, Link in bio.",
+   "source": "graphic",
+   "camera": "static graphic, gentle scale",
+   "motion": "text animates in, then holds",
+   "vo": "Aaj hi order karo,",
+   "caption": "Aaj hi order karo,",
+   "sfx": "",
+   "music": "bed resolves on a soft final chord"
+  },
+  {
+   "t": 18,
+   "shot": "G09",
+   "screen": "End card: bakery name, Order today, Link in bio.",
+   "source": "graphic",
+   "camera": "static graphic, gentle scale",
+   "motion": "text animates in, then holds",
+   "vo": "link bio mein.",
+   "caption": "link bio mein.",
+   "sfx": "",
+   "music": ""
+  },
+  {
+   "t": 19,
+   "shot": "G09",
+   "screen": "End card: bakery name, Order today, Link in bio.",
+   "source": "graphic",
+   "camera": "static graphic, gentle scale",
+   "motion": "text animates in, then holds",
+   "vo": "",
+   "caption": "",
+   "sfx": "",
+   "music": "last chord rings out"
+  }
+ ],
+ "lines": [
+  {
+   "id": "L01",
+   "shot": "S01",
+   "at": 0.2,
+   "end": 2.9,
+   "text": "Arre yaar, Diwali mein bas paanch din bache hain...",
+   "tts": "अरे यार, दिवाली में बस पाँच दिन बचे हैं...",
+   "hint": "worried, half to herself"
+  },
+  {
+   "id": "L02",
+   "shot": "S02",
+   "at": 3.1,
+   "end": 5.8,
+   "text": "Aur gift ka ek bhi dabba ready nahi. Umm...",
+   "tts": "और गिफ़्ट का एक भी डब्बा रेडी नहीं। उम्म...",
+   "hint": "a small laugh at herself, then thinking"
+  },
+  {
+   "id": "L03",
+   "shot": "S04",
+   "at": 6.1,
+   "end": 9.6,
+   "text": "Phir mila Gulmohar Bakery ka box, matlab haath se bani cookies.",
+   "tts": "फिर मिला गुलमोहर बेकरी का बॉक्स, मतलब हाथ से बनी कुकीज़।",
+   "hint": "brightening, warm"
+  },
+  {
+   "id": "L04",
+   "shot": "S06",
+   "at": 10.1,
+   "end": 13.4,
+   "text": "Padosan boli, haan, yeh toh ghar jaisa hai na!",
+   "tts": "पड़ोसन बोली, हाँ, ये तो घर जैसा है ना!",
+   "hint": "proud, smiling"
+  },
+  {
+   "id": "L05",
+   "shot": "G08",
+   "at": 14.2,
+   "end": 16.6,
+   "text": "Barah cookies, chaar sau ninyanve rupaye.",
+   "tts": "बारह कुकीज़, चार सौ निन्यानवे रुपये।",
+   "hint": "clear, friendly"
+  },
+  {
+   "id": "L06",
+   "shot": "G09",
+   "at": 17.2,
+   "end": 19.4,
+   "text": "Aaj hi order karo, link bio mein.",
+   "tts": "आज ही ऑर्डर करो, लिंक बायो में।",
+   "hint": "inviting"
+  }
+ ],
+ "overlays": [],
+ "claims": [
+  {
+   "text": "12 kaju-pista cookies",
+   "source": "research.md C1"
+  },
+  {
+   "text": "Rs 499",
+   "source": "research.md C2"
+  },
+  {
+   "text": "haath se bani (hand-made)",
+   "source": "research.md C3"
+  }
+ ],
+ "formats": [
+  "9:16",
+  "1:1",
+  "16:9",
+  "4:5"
+ ]
+}

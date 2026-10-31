@@ -467,6 +467,7 @@ def _record_in_project(root, stage_id, rec):
     def f(st):
         s = st.setdefault("stages", {}).setdefault(stage_id, {})
         s["status"] = "passed" if rec["passed"] else "failed"
+        s.pop("note", None)                      # a note about the earlier status ("gate it: ...") is stale now
         s["gate_runs"] = s.get("gate_runs", 0) + 1
         s["last_gate"] = rec["run"]
         s.setdefault("history", []).append({"gate": rec["run"], "score": rec["score"], "passed": rec["passed"],

@@ -1,0 +1,24 @@
+{
+  "stage": "clips",
+  "version": 1,
+  "title": "Version A clips: image-to-video per shot",
+  "layer": {"kind": "media", "files": ["clips/cut/*.mp4"], "max_files": 8},
+  "references": ["screenplay.json"],
+  "pass_score": 95,
+  "judge_notes": "File names are shot ids: clips/cut/S03.mp4 is the window of shot S03 used in the cut (raw takes are in clips/raw/). Each take was generated from its keyframe as the first frame; only the used window matters, usually the first (end - start) seconds. The clip's own audio is discarded.",
+  "restructure": {"targets": ["clips/prompts.json"]},
+  "questions": [
+    {"id": "CL1", "text": "Does every live shot have a clip at least as long as the shot?", "weight": 2, "check": "shot_media_long_enough", "args": {"folder": "clips/cut", "ext": ".mp4"}},
+    {"id": "CL2", "text": "Is every clip in the screenplay's aspect?", "check": "media_aspect"},
+    {"id": "CL11", "text": "Is every clip prompt free of requests to draw text, a logo or a number plate?", "weight": 2, "hard": true, "check": "prompt_file_no_text", "args": {"file": "clips/prompts.json"}},
+    {"id": "CL12", "text": "Did every clip pass its take checks within max_takes (none flagged)?", "check": "none_flagged", "args": {"dir": "clips"}},
+    {"id": "CL3", "text": "Does each clip start from its keyframe and keep the same people, wardrobe and place?", "weight": 3, "evidence": "Name any clip that drifts."},
+    {"id": "CL4", "text": "In the used window, does each clip show only the one small action its shot asks for?", "weight": 3, "evidence": "Name any extra action."},
+    {"id": "CL5", "text": "In the used window, does nobody enter or leave frame and no new person or object appear?", "weight": 2, "evidence": "Name the clip and second."},
+    {"id": "CL6", "text": "Are faces and hands stable in the used window (no morphing, melting or extra fingers)?", "weight": 3, "evidence": "Name the clip and second."},
+    {"id": "CL7", "text": "Is every clip free of text, letters, logos, emblems and number plates?", "weight": 3, "hard": true, "evidence": "Quote nothing for a yes; for a no, name the file and where the text or mark is.", "quote": false},
+    {"id": "CL8", "text": "Is the camera move the one the shot names?", "evidence": "Name any clip with the wrong move."},
+    {"id": "CL9", "text": "Is motion natural (blinks, breathing, weight) with no sliding or floating?", "weight": 2, "evidence": "Name the least natural clip."},
+    {"id": "CL10", "text": "Do light and colour stay like the keyframe through the used window?", "evidence": "Name any clip that shifts."}
+  ]
+}

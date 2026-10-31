@@ -1,0 +1,27 @@
+{
+  "stage": "video_b",
+  "version": 1,
+  "title": "Version B: a HyperFrames composition of the keyframes, sheets and graphics with motion, the same voice and music",
+  "layer": {"kind": "media", "files": ["out/B/*_9x16.mp4", "out/B/*_16x9.mp4", "out/B/*.mp4"], "max_files": 1},
+  "references": ["screenplay.json", "research.md"],
+  "pass_score": 95,
+  "judge_notes": "The attached video is Version B of the film, a HyperFrames composition of the keyframes, sheets and graphics with motion, the same voice and music, judged against screenplay.json second by second. Every word on screen should be an overlay (captions, cards, end card) on top of the picture, never part of an AI-made image.",
+  "restructure": {"targets": ["screenplay.json"]},
+  "questions": [
+    {"id": "VB1", "text": "Does the video last the screenplay's duration?", "check": "media_duration", "args": {"files": ["out/B/*.mp4"]}},
+    {"id": "VB2", "text": "Is every file in its aspect?", "check": "media_aspect", "args": {"files": ["out/B/*.mp4"]}},
+    {"id": "VB3", "text": "Does the video carry the voice and music track?", "check": "has_audio_stream", "args": {"files": ["out/B/*.mp4"]}},
+    {"id": "VB4", "text": "Is the video free of black stretches?", "check": "no_black_frames", "args": {"files": ["out/B/*.mp4"]}},
+    {"id": "VB14", "text": "Are the captions in Roman script (Devanagari belongs only in the voice text)?", "check": "captions_roman", "args": {"file": "out/B/captions.ass"}},
+    {"id": "VB5", "text": "Does the video follow the screenplay shot by shot, in order, each shot at its time?", "weight": 3, "evidence": "Name any shot that is missing, out of order or mistimed.", "quote": false},
+    {"id": "VB6", "text": "Do the captions say the voice-over words, in time with the voice?", "weight": 2, "evidence": "Name any caption that differs or lags.", "quote": false},
+    {"id": "VB7", "text": "Are people, wardrobe and places the same across shots?", "weight": 2, "evidence": "Name any break in continuity.", "quote": false},
+    {"id": "VB8", "text": "Is the picture free of text, logos or emblems inside the AI-made images (all words are clean overlays)?", "weight": 3, "hard": true, "evidence": "Name the second of any text inside the image.", "quote": false},
+    {"id": "VB15", "text": "Is every text element inside the frame and the safe zone in every size made, none cut off (HyperFrames check + DOM bounds)?", "weight": 2, "hard": true, "check": "hf_text_fits"},
+    {"id": "VB16", "text": "Do sampled frames render the same twice, the second time in shuffled order (no clock or order dependence)?", "weight": 2, "check": "hf_frames_repeatable"},
+    {"id": "VB10", "text": "Is every claim shown or said found in research.md, with example numbers marked Sample?", "weight": 2, "hard": true, "evidence": "Name any claim that is not in research.md.", "quote": false},
+    {"id": "VB11", "text": "Does it end on the end card with the brief's call to action?", "weight": 2, "evidence": "Describe the end card.", "quote": false},
+    {"id": "VB12", "text": "Do the stills move (a gentle camera move or animation), with no frame frozen for more than 3 s?", "weight": 2, "evidence": "Name the second of any frozen stretch.", "quote": false},
+    {"id": "VB13", "text": "Are the graphics, captions and end card clean, readable and premium, with icons as drawings and no emoji?", "evidence": "Describe the weakest graphic.", "quote": false}
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "stage": "research",
+  "version": 1,
+  "title": "Research: audience, their words, competitors, claims with sources",
+  "layer": {"kind": "text", "files": ["research.md"]},
+  "references": ["brief.md"],
+  "pass_score": 95,
+  "judge_notes": "research.md is the only place the film may take a claim from. Sources are web pages the agent read; each must carry its URL and the date it was read. Facts the user gave in the brief are cited as [brief].",
+  "restructure": {"targets": ["research.md"]},
+  "questions": [
+    {"id": "RS1", "text": "Does every item under Sources have a URL and the date it was read (YYYY-MM-DD)?", "weight": 2, "check": "sources_dated"},
+    {"id": "RS2", "text": "Does every claim cite a listed source [S<n>] or [brief]?", "weight": 3, "hard": true, "check": "claims_cited"},
+    {"id": "RS3", "text": "Does research.md have the sections Audience, Problem, Competitors, Claims, Sources and Angle?", "check": "has_sections", "args": {"headings": ["Audience", "Problem", "Competitors", "Claims", "Sources", "Angle"]}},
+    {"id": "RS4", "text": "Does the Audience section say who buys, where they are and what they care about, specific to this brief?", "weight": 2, "evidence": "Quote the audience description."},
+    {"id": "RS5", "text": "Does the Problem section give the problem in the audience's own words, with a source for each phrasing?", "weight": 2, "evidence": "Quote one phrasing and its source id."},
+    {"id": "RS6", "text": "Does Competitors give at least two competitors' or alternatives' angles, each with a source?", "weight": 2, "evidence": "Quote two angles with their source ids."},
+    {"id": "RS7", "text": "Is every claim specific and checkable (a number, a fact, a stated quality), not vague praise?", "weight": 2, "evidence": "Quote the vaguest claim."},
+    {"id": "RS8", "text": "Is every claim supported by what its cited source is summarised as saying under Sources?", "weight": 3, "hard": true, "evidence": "Quote any claim whose source does not say it."},
+    {"id": "RS9", "text": "Are the facts the user gave in the brief (product, price, offer) in the claims list as [brief], unchanged?", "weight": 2, "evidence": "Quote the brief fact and the claim line."},
+    {"id": "RS10", "text": "Is the research free of superlatives about the product or competitors (best, number one, cheapest) that no source backs?", "weight": 2, "evidence": "Name any unbacked superlative.", "quote": false},
+    {"id": "RS11", "text": "Does the Angle section say what the video should stand on, drawn from the findings above it?", "evidence": "Quote the angle."},
+    {"id": "RS12", "text": "Is the research about this product, audience and market, with no generic filler that would fit any business?", "evidence": "Quote the most specific finding."}
+  ]
+}

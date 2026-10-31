@@ -1,0 +1,23 @@
+{
+  "stage": "story",
+  "version": 1,
+  "title": "Story: directions, the chosen one, beats",
+  "layer": {"kind": "text", "files": ["story.md"]},
+  "references": ["brief.md", "research.md"],
+  "pass_score": 95,
+  "judge_notes": "A short video story (usually 15-60 s). Judge the chosen direction and its beats; the other directions only need to be real alternatives.",
+  "restructure": {"targets": ["story.md"]},
+  "questions": [
+    {"id": "ST1", "text": "Does story.md have the sections Directions, Chosen and Beats?", "check": "has_sections", "args": {"headings": ["Directions", "Chosen", "Beats"]}},
+    {"id": "ST2", "text": "Does story.md offer 2 or 3 genuinely different directions, each in 1-3 sentences?", "evidence": "Quote the first words of each direction."},
+    {"id": "ST3", "text": "Does the Chosen section say why this direction beats the others for the brief's audience and goal?", "evidence": "Quote the reason."},
+    {"id": "ST4", "text": "Does the story open with a hook a viewer understands with the sound off in the first 3 seconds?", "weight": 3, "evidence": "Quote the opening beat."},
+    {"id": "ST5", "text": "Is every product claim in the story found in research.md's claims list?", "weight": 3, "hard": true, "evidence": "Quote each claim and the research claim it comes from."},
+    {"id": "ST6", "text": "Is there one clear main character with a problem the audience recognises from research.md?", "weight": 2, "evidence": "Quote the problem beat."},
+    {"id": "ST7", "text": "Does every beat carry a time range, and do the beats add up to the brief's length?", "weight": 2, "evidence": "Quote the first and last time ranges."},
+    {"id": "ST8", "text": "Does the product do something visible on screen, not only get talked about?", "weight": 2, "evidence": "Quote the beat where it is seen."},
+    {"id": "ST9", "text": "Does the story end on the brief's call to action?", "weight": 2, "evidence": "Quote the last beat and the brief's call to action."},
+    {"id": "ST10", "text": "Can every beat be filmed as 1-3 s shots of one small action each (no crowds, no stunts, nobody leaving frame)?", "weight": 2, "evidence": "Quote the hardest beat to film."},
+    {"id": "ST11", "text": "Is the story free of real brands, logos, celebrities and competitors named or shown?", "weight": 2, "hard": true, "evidence": "Name any real brand or person.", "quote": false}
+  ]
+}

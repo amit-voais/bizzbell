@@ -1,0 +1,24 @@
+Bizzbell
+Copyright (c) 2026 Bizzbell contributors
+Licensed under the MIT License (see LICENSE).
+
+This package uses or credits the following third-party work.
+
+HyperFrames
+  Copyright HeyGen. Licensed under the Apache License, Version 2.0.
+  Bizzbell runs HyperFrames at a pinned version with `npx` on the user's machine to
+  render Version B. HyperFrames is not copied into or redistributed with this
+  package; npx downloads it from the npm registry under its own license.
+  https://www.apache.org/licenses/LICENSE-2.0
+
+OpenFilm
+  Licensed under the MIT License.
+  Two quality-check ideas are credited to OpenFilm: the frame repeatability check
+  (render frames twice, the second time in shuffled order, and compare) and the
+  cut-off text check (every text box inside the frame and the safe zone). Only the
+  ideas were used; no OpenFilm code was copied. "OpenFilm" is a trademark of its
+  owners and is used here only to credit them.
+
+Hidrogen
+  Bizzbell calls the Hidrogen API (api.hidrogen.in) with the user's own key. No
+  Hidrogen code is included.

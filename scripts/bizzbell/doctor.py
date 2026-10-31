@@ -21,6 +21,7 @@ NOT_TEXT = ("image", "video", "voice", "music", "tts", "speech", "embed", "whisp
             "moderation")
 MEDIA_ENDPOINTS = {"images": "/v1/images/generations", "videos": "/v1/videos", "voice": "/v1/audio/speech",
                    "music": "/v1/music", "media_judge": "/v1/media/judge", "quote": "/v1/media/quote"}
+NODE_MIN = 22     # what the pinned HyperFrames needs (hf/runner.py)
 INSTALL = {"darwin": "brew install ffmpeg node", "linux": "sudo apt-get install ffmpeg nodejs npm",
            "win32": "winget install Gyan.FFmpeg OpenJS.NodeJS"}
 
@@ -98,8 +99,9 @@ def run(root=None, write=True):
         add(t, bool(p), _ver([p, "-version"]) if p else "missing: install with `%s`" % hint)
     node = _tool("node")
     nv = _ver([node, "--version"]) if node else ""
-    node_ok = bool(node) and bool(re.match(r"v?(\d+)", nv)) and int(re.match(r"v?(\d+)", nv).group(1)) >= 18
-    add("node", node_ok, ("Node %s" % nv) if node else "missing (needed for HyperFrames): install with `%s`" % hint)
+    node_ok = bool(node) and bool(re.match(r"v?(\d+)", nv)) and int(re.match(r"v?(\d+)", nv).group(1)) >= NODE_MIN
+    add("node", node_ok, ("Node %s" % nv + ("" if node_ok else " is too old: HyperFrames needs Node %d+" % NODE_MIN))
+        if node else "missing (needed for HyperFrames): install with `%s`" % hint)
     add("npx", bool(_tool("npx")), "present" if _tool("npx") else "missing (comes with Node)")
     has = hidrogen.has_key()
     add("key", has, "present (not shown)" if has else "missing: run python3 scripts/bb.py key")

@@ -1,0 +1,25 @@
+{
+  "stage": "characters",
+  "version": 1,
+  "title": "Characters: bible, turnaround sheets, location plates",
+  "layer": {"kind": "media", "files": ["characters/sheets/*.png", "characters/plates/*.png", "characters/bible.md"], "max_files": 8},
+  "references": ["screenplay.json", "CONSENT.md"],
+  "pass_score": 95,
+  "judge_notes": "characters/sheets/<ID>.png is one character's turnaround sheet: four views of the same person on a plain background (head front, head three-quarter, head profile, full body front). characters/plates/<ID>.png is an empty location plate. IDs are the screenplay.json bible ids. characters/bible.md is the in-depth bible; it carries the screenplay's character and location blocks word for word.",
+  "restructure": {"targets": ["characters/prompts.json"]},
+  "questions": [
+    {"id": "CH1", "text": "Is characters/bible.md present and not empty?", "check": "files_exist", "args": {"files": ["characters/bible.md"]}},
+    {"id": "CH2", "text": "Are the screenplay's character, wardrobe and location blocks word for word in characters/bible.md?", "weight": 2, "check": "bible_blocks_match"},
+    {"id": "CH3", "text": "Does every real person in the bibles have a CONSENT.md naming them, the film, channels, duration and a date?", "weight": 3, "hard": true, "check": "consent_for_real_faces"},
+    {"id": "CH4", "text": "Does every character have a sheet and every location a plate?", "weight": 2, "check": "sheets_cover_cast"},
+    {"id": "CH13", "text": "Does every sheet show four views of the same person (head front, head three-quarter, head profile, full body)?", "weight": 2, "evidence": "Name each sheet and the views it shows."},
+    {"id": "CH5", "text": "Does each sheet match its bible: face, skin, hair, build and the fixed details?", "weight": 3, "evidence": "Name any detail that differs."},
+    {"id": "CH6", "text": "Does each sheet show the wardrobe its bible names?", "weight": 2, "evidence": "Name the garments seen."},
+    {"id": "CH7", "text": "Is it clearly the same person in every view of a sheet (same face, same proportions)?", "weight": 2, "evidence": "Name any view that drifts."},
+    {"id": "CH8", "text": "Are hands natural with five fingers wherever they are visible?", "evidence": "Name any wrong hand."},
+    {"id": "CH9", "text": "Is every sheet and plate free of text, letters, logos, emblems, insignia and number plates?", "weight": 3, "hard": true, "evidence": "Quote nothing for a yes; for a no, name the file and where the text or mark is.", "quote": false},
+    {"id": "CH10", "text": "Does every location in the screenplay have a plate that matches its bible (layout, window and door side, light)?", "weight": 2, "evidence": "Name each plate and what matches.", "scope": "layer"},
+    {"id": "CH11", "text": "Does characters/bible.md describe each character in depth: face, skin, hair, build, wardrobe per scene, fixed details?", "weight": 2, "evidence": "Quote one character's description.", "scope": "layer"},
+    {"id": "CH12", "text": "Is every face free of a likeness to a famous or real person who is not named in CONSENT.md?", "weight": 2, "hard": true, "evidence": "Name any face that looks like a known person.", "quote": false}
+  ]
+}

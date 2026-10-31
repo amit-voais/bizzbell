@@ -1,0 +1,67 @@
+/* Bizzbell Version B look: clean, premium, quiet motion. Sizes come from the per-ratio variables above
+   (--u = 1 px at 1080 px on the short side; --sl/--st/--sr/--sb = safe-zone edges in px). */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: var(--ink); }
+body { font-family: var(--font-text); color: var(--paper); -webkit-font-smoothing: antialiased; }
+#root { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--ink); }
+
+/* ---- image shots: a still with a slow camera move ---- */
+.bb-shot { position: absolute; inset: 0; overflow: hidden; background: var(--ink); }
+.bb-cam { position: absolute; inset: 0; will-change: transform; }
+.bb-still { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.bb-still.bb-contain { object-fit: contain; }
+.bb-blur { position: absolute; inset: -6%; width: 112%; height: 112%; object-fit: cover; display: block;
+  filter: blur(calc(38px * var(--u))) brightness(0.55) saturate(1.1); }
+.bb-backdrop { position: absolute; inset: 0;
+  background: radial-gradient(120% 90% at 30% 20%, var(--accent-soft), transparent 60%),
+              linear-gradient(160deg, var(--ink-2), var(--ink)); }
+.bb-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 46%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0)); }
+.bb-chip-row { position: absolute; left: var(--sl); right: calc(var(--W) - var(--sr)); top: var(--st);
+  display: flex; justify-content: flex-start; }
+.bb-chip { display: inline-flex; align-items: center; gap: calc(14px * var(--u)); max-width: 100%;
+  padding: calc(16px * var(--u)) calc(26px * var(--u)); border-radius: calc(999px * var(--u));
+  background: var(--paper); color: var(--ink); font-family: var(--font-display); font-weight: 700;
+  font-size: calc(var(--chip-fs) * var(--u)); line-height: 1.15; letter-spacing: -0.01em; }
+.bb-chip .bb-icon { color: var(--accent-ink); flex: none; }
+
+/* ---- graphic shots: cards, numbers, end card ---- */
+.bb-graphic { background: var(--paper); color: var(--ink); }
+.bb-graphic.bb-dark { background: var(--ink); color: var(--paper); }
+.bb-graphic .bb-glow { position: absolute; inset: 0;
+  background: radial-gradient(70% 55% at 50% 38%, var(--accent-soft), transparent 70%); }
+.bb-panel { position: absolute; left: var(--sl); top: var(--st); width: calc(var(--sr) - var(--sl));
+  height: calc(var(--panel-b) - var(--st)); display: flex; flex-direction: column; justify-content: center;
+  align-items: center; text-align: center; gap: calc(30px * var(--u)); }
+.bb-panel > * { max-width: 100%; }
+.bb-badge { width: calc(132px * var(--u)); height: calc(132px * var(--u)); border-radius: 50%; display: flex;
+  align-items: center; justify-content: center; background: var(--accent); color: var(--on-accent); flex: none; }
+.bb-badge .bb-icon { width: 56%; height: 56%; }
+.bb-title { font-family: var(--font-display); font-weight: 800; line-height: 1.06; letter-spacing: -0.025em;
+  overflow-wrap: anywhere; }
+.bb-sub { font-weight: 500; line-height: 1.3; opacity: 0.82; overflow-wrap: anywhere; }
+.bb-number { font-family: var(--font-display); font-weight: 800; line-height: 0.95; letter-spacing: -0.04em;
+  color: var(--accent-ink); font-variant-numeric: tabular-nums; }
+.bb-dark .bb-number { color: var(--accent); }
+.bb-sample { display: inline-block; padding: calc(8px * var(--u)) calc(18px * var(--u));
+  border: calc(2px * var(--u)) solid currentColor; border-radius: calc(999px * var(--u));
+  font-size: calc(26px * var(--u)); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  opacity: 0.8; }
+.bb-brand { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
+  overflow-wrap: anywhere; }
+.bb-logo { max-width: 60%; max-height: calc(220px * var(--u)); object-fit: contain; display: block; }
+.bb-cta { display: inline-flex; align-items: center; gap: calc(16px * var(--u));
+  padding: calc(26px * var(--u)) calc(46px * var(--u)); border-radius: calc(999px * var(--u));
+  background: var(--accent); color: var(--on-accent); font-family: var(--font-display); font-weight: 800;
+  font-size: calc(var(--cta-fs) * var(--u)); line-height: 1.1; letter-spacing: -0.01em; }
+.bb-cta .bb-icon { flex: none; }
+
+/* ---- captions: word-timed, inside the safe zone ---- */
+.bb-cap { position: absolute; inset: 0; pointer-events: none; }
+.bb-cap-row { position: absolute; left: var(--sl); width: calc(var(--sr) - var(--sl));
+  bottom: calc(var(--H) - var(--sb)); display: flex; justify-content: center; }
+.bb-cap-box { display: flex; flex-wrap: wrap; justify-content: center; column-gap: 0.26em; row-gap: 0.04em;
+  max-width: 100%; padding: 0.2em 0.42em 0.24em; border-radius: 0.3em; background: var(--cap-bg);
+  font-family: var(--font-display); font-weight: 800; font-size: calc(var(--cap-fs) * var(--u));
+  line-height: 1.14; letter-spacing: -0.015em; color: #ffffff; text-align: center; }
+.bb-w { display: inline-block; white-space: nowrap; }

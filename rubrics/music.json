@@ -1,0 +1,24 @@
+{
+  "stage": "music",
+  "version": 1,
+  "title": "Music bed (no vocals)",
+  "layer": {"kind": "media", "files": ["audio/music_bed.wav"], "max_files": 1},
+  "references": ["screenplay.json"],
+  "pass_score": 95,
+  "judge_notes": "audio/music_bed.wav is the instrumental bed under the voice-over (a single take is judged with the same questions). It must have no vocals of any kind, for its whole length.",
+  "restructure": {"targets": ["audio/music/prompts.json"]},
+  "questions": [
+    {"id": "MU1", "text": "Is audio/music_bed.wav present and not empty?", "check": "files_exist", "args": {"files": ["audio/music_bed.wav"]}},
+    {"id": "MU2", "text": "Does the music last the film's duration?", "check": "media_duration", "args": {"files": ["audio/music_bed.wav"], "tolerance": 1.0}},
+    {"id": "MU11", "text": "Was the chosen bed judged voice-free on every judge pass of its take?", "weight": 3, "hard": true, "check": "music_voice_free"},
+    {"id": "MU12", "text": "Is the bed free of silent gaps longer than a second (fades at the ends are fine)?", "check": "no_long_silence", "args": {"file": "audio/music_bed.wav"}},
+    {"id": "MU3", "text": "Is the music free of any vocals for its whole length: no singing, humming, choir, chant or spoken words?", "weight": 3, "hard": true, "evidence": "Name the second of any voice.", "quote": false, "voice_free": true},
+    {"id": "MU4", "text": "Does the mood match screenplay.json music.prompt and the story's tone?", "weight": 2, "evidence": "Describe the mood.", "quote": false},
+    {"id": "MU5", "text": "Does it leave room for the voice (no busy lead melody in the voice's range)?", "weight": 2, "evidence": "Describe the arrangement.", "quote": false},
+    {"id": "MU6", "text": "Does it lift and resolve with the film's beats (a lift at the turn, a resolve at the end card)?", "weight": 2, "evidence": "Name the seconds of the lift and the resolve.", "quote": false},
+    {"id": "MU7", "text": "Does it end cleanly on a resolved ending or a fade, not cut mid-phrase?", "evidence": "Describe the ending.", "quote": false},
+    {"id": "MU8", "text": "Is it clean: no clipping, glitches or audibly repeating loops?", "evidence": "Name the second of any fault.", "quote": false},
+    {"id": "MU9", "text": "Is it free of recognisable copyrighted melodies?", "weight": 2, "evidence": "Name any melody it resembles.", "quote": false},
+    {"id": "MU10", "text": "Is the style right for the brief's audience and setting?", "evidence": "Describe the style.", "quote": false}
+  ]
+}

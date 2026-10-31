@@ -276,12 +276,14 @@ NEXT_HINT = {
     "story": "write story.md (2-3 directions, one chosen), then: bb gate story",
     "humanize": "write story_humanized.md, then: bb gate humanize",
     "screenplay": "write screenplay.md + screenplay.json (one row per second), then: bb gate screenplay",
-    "characters": "make characters/bible.md and the sheets, then: bb gate characters",
-    "keyframes": "make keyframes/<shot>.png, then: bb gate keyframes",
-    "audio": "make the voice and music into audio/, then: bb gate audio",
-    "video_a": "make Version A into out/A/ (or bb mark video_a skipped --note ... if /v1/videos is not live)",
-    "video_b": "make Version B into out/B/, then: bb gate video_b",
-    "final": "make the formats and out/report.md",
+    "characters": "write characters/bible.md, then: bb characters make; bb gate characters",
+    "keyframes": "bb keyframes make, then: bb gate keyframes",
+    "audio": "bb voice audition; bb voice takes; bb voice place; bb music make; bb mix build; "
+             "then: bb gate voice; bb gate music; bb gate mix",
+    "video_a": "bb clips make; bb gate clips; bb version_a build; bb gate version_a "
+               "(or bb mark video_a skipped --note ... if /v1/videos is not live)",
+    "video_b": "bb version_b, then: bb gate video_b",
+    "final": "bb final (every size, share copies, the final gate of each version, out/report.md)",
 }
 
 

@@ -81,13 +81,14 @@ def _validate(obj, wanted):
             json.loads(content)
         out[rel] = content
     if not out:
-        raise ValueError("no target file came back")
+        raise ValueError("no target file came back (expected one of: %s)" % ", ".join(wanted))
     return out, [str(c) for c in obj.get("changes", [])][:50]
 
 
 def run(root, stage_id, extra=False, note=""):
     """One restructure round. Returns {stage, round, allowed, files, kept, changes, model, cost_inr}."""
-    project.stage(stage_id)
+    if stage_id not in project.STAGE_IDS:
+        gate.rubric_path(root, stage_id)     # a media sub-layer (clips, voice, ...) needs its rubric; else UsageError
     record = gate.latest(root, stage_id)
     if record is None:
         raise UsageError("no gate run for %s yet: run python3 scripts/bb.py gate %s first" % (stage_id, stage_id))
@@ -108,6 +109,10 @@ def run(root, stage_id, extra=False, note=""):
         raise UsageError("the %s layer changed after gate #%d: run python3 scripts/bb.py gate %s again first"
                          % (stage_id, record["run"], stage_id))
     wanted = targets(ctx)
+    if not wanted:
+        raise UsageError("nothing %s can rewrite: its rubric names no restructure targets and its layer has no text "
+                         "file. Add \"restructure\": {\"targets\": [\"<file>\"]} to rubrics/%s.json, or fix the "
+                         "layer by hand and gate it again." % (stage_id, stage_id))
     files = {}
     for rel in wanted:
         p = os.path.join(root, rel)

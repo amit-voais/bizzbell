@@ -1,0 +1,21 @@
+{
+  "stage": "mix",
+  "version": 1,
+  "title": "Mix: voice, music and sound effects",
+  "layer": {"kind": "media", "files": ["audio/mix.wav"], "max_files": 1},
+  "references": ["screenplay.json"],
+  "pass_score": 95,
+  "judge_notes": "audio/mix.wav is the final mix: voice-over on top, the music bed ducked under it, sound effects only where the screenplay shows the action. Target -14 LUFS integrated, true peak at or below -1 dBTP.",
+  "restructure": {"targets": ["audio/voice/prompts.json", "audio/music/prompts.json"]},
+  "questions": [
+    {"id": "MX1", "text": "Is audio/mix.wav present and not empty?", "check": "files_exist", "args": {"files": ["audio/mix.wav"]}},
+    {"id": "MX2", "text": "Does the mix last the film's duration?", "check": "media_duration", "args": {"files": ["audio/mix.wav"]}},
+    {"id": "MX3", "text": "Is the mix at -14 LUFS with a true peak at or below -1 dBTP?", "weight": 2, "check": "audio_loudness", "args": {"files": ["audio/mix.wav"]}},
+    {"id": "MX4", "text": "Is the voice clearly on top of the music in every line?", "weight": 3, "evidence": "Name any line that is buried.", "quote": false},
+    {"id": "MX5", "text": "Does every sound effect match an action the screenplay shows in that second?", "weight": 2, "evidence": "Name each effect and its second.", "quote": false},
+    {"id": "MX6", "text": "Is the mix free of any voice other than the voice-over (no vocals in the music, no model speech)?", "weight": 3, "hard": true, "evidence": "Name the second of any other voice.", "quote": false},
+    {"id": "MX7", "text": "Do the music's start and end follow the screenplay's music column?", "evidence": "Name the seconds.", "quote": false},
+    {"id": "MX8", "text": "Is it clean: no clipping, pops or abrupt cuts?", "weight": 2, "evidence": "Name the second of any fault.", "quote": false},
+    {"id": "MX9", "text": "Does each voice line sit at the time lines[] gives?", "evidence": "Name any line that is off.", "quote": false}
+  ]
+}

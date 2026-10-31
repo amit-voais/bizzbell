@@ -1,0 +1,27 @@
+{
+  "stage": "version_a",
+  "version": 1,
+  "title": "Version A: Hidrogen image-to-video clips cut to the voice and music",
+  "layer": {"kind": "media", "files": ["out/A/*_9x16.mp4", "out/A/*_16x9.mp4", "out/A/*.mp4"], "max_files": 1},
+  "references": ["screenplay.json", "research.md"],
+  "pass_score": 95,
+  "judge_notes": "The attached video is Version A of the film, Hidrogen image-to-video clips cut to the voice and music, judged against screenplay.json second by second. Every word on screen should be an overlay (captions, cards, end card) on top of the picture, never part of an AI-made image.",
+  "restructure": {"targets": ["clips/prompts.json"]},
+  "questions": [
+    {"id": "VA1", "text": "Does the video last the screenplay's duration?", "check": "media_duration", "args": {"files": ["out/A/*.mp4"]}},
+    {"id": "VA2", "text": "Is every file in its aspect?", "check": "media_aspect", "args": {"files": ["out/A/*.mp4"]}},
+    {"id": "VA3", "text": "Does the video carry the voice and music track?", "check": "has_audio_stream", "args": {"files": ["out/A/*.mp4"]}},
+    {"id": "VA4", "text": "Is the video free of black stretches?", "check": "no_black_frames", "args": {"files": ["out/A/*.mp4"]}},
+    {"id": "VA14", "text": "Are the captions in Roman script (Devanagari belongs only in the voice text)?", "check": "captions_roman", "args": {"file": "out/A/captions.ass"}},
+    {"id": "VA5", "text": "Does the video follow the screenplay shot by shot, in order, each shot at its time?", "weight": 3, "evidence": "Name any shot that is missing, out of order or mistimed.", "quote": false},
+    {"id": "VA6", "text": "Do the captions say the voice-over words, in time with the voice?", "weight": 2, "evidence": "Name any caption that differs or lags.", "quote": false},
+    {"id": "VA7", "text": "Are people, wardrobe and places the same across shots?", "weight": 2, "evidence": "Name any break in continuity.", "quote": false},
+    {"id": "VA8", "text": "Is the picture free of text, logos or emblems inside the AI-made images (all words are clean overlays)?", "weight": 3, "hard": true, "evidence": "Name the second of any text inside the image.", "quote": false},
+    {"id": "VA9", "text": "Are all captions and overlays inside the safe zone and fully readable, none cut off?", "weight": 2, "evidence": "Name the second of any clipped text.", "quote": false},
+    {"id": "VA10", "text": "Is every claim shown or said found in research.md, with example numbers marked Sample?", "weight": 2, "hard": true, "evidence": "Name any claim that is not in research.md.", "quote": false},
+    {"id": "VA11", "text": "Does it end on the end card with the brief's call to action?", "weight": 2, "evidence": "Describe the end card.", "quote": false},
+    {"id": "VA15", "text": "Is the picture free of frozen stretches where a clip should move?", "check": "no_freeze_frames", "args": {"files": ["out/A/*.mp4"]}},
+    {"id": "VA12", "text": "Is only the synthetic voice and the music heard (the video model's own speech and sound are gone)?", "weight": 2, "evidence": "Name the second of any model sound.", "quote": false},
+    {"id": "VA13", "text": "Does it look real: faces and hands stable, no morphing inside or between shots?", "weight": 2, "evidence": "Name the second of the worst artefact.", "quote": false}
+  ]
+}

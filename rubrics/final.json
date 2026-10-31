@@ -1,0 +1,24 @@
+{
+  "stage": "final",
+  "version": 1,
+  "title": "Final: formats, share copies and the report",
+  "layer": {"kind": "media", "files": ["out/A/*_9x16.mp4", "out/B/*_9x16.mp4", "out/report.md"], "max_files": 2},
+  "references": ["screenplay.json", "research.md"],
+  "pass_score": 95,
+  "judge_notes": "The attached videos are the 9:16 masters of Version A (when it was made) and Version B; out/report.md is pasted below them. Nothing is published by the skill; the report tells the user what to do at upload.",
+  "restructure": {"targets": ["out/report.md"]},
+  "questions": [
+    {"id": "FI1", "text": "Does each made version have 9:16, 1:1 and 16:9 files and a share copy under 25 MB?", "weight": 3, "check": "formats_present"},
+    {"id": "FI2", "text": "Does out/report.md have the sections Scores, Flaws, Claims, Spend and AI label?", "weight": 2, "check": "has_sections", "args": {"file": "out/report.md", "headings": ["Scores", "Flaws", "Claims", "Spend", "AI label"]}},
+    {"id": "FI3", "text": "Is every output file in its aspect?", "weight": 2, "check": "media_aspect", "args": {"files": ["out/A/*.mp4", "out/B/*.mp4"]}},
+    {"id": "FI4", "text": "Are the 9:16 masters at -14 LUFS with a true peak at or below -1 dBTP?", "check": "audio_loudness", "args": {"files": ["out/A/*_9x16.mp4", "out/B/*_9x16.mp4"], "tolerance": 1.5}},
+    {"id": "FI5", "text": "Does report.md give the gate score of every layer and each version's final score against the screenplay?", "weight": 2, "evidence": "Quote the scores table."},
+    {"id": "FI6", "text": "Does report.md list the remaining flaws honestly, shot by shot?", "weight": 2, "evidence": "Quote two flaw lines."},
+    {"id": "FI7", "text": "Does report.md list every claim with its source from research.md?", "weight": 2, "evidence": "Quote one claim with its source."},
+    {"id": "FI8", "text": "Does report.md state the spend from the ledger against the cap?", "evidence": "Quote the spend line."},
+    {"id": "FI9", "text": "Does report.md tell the user to switch on the platform's AI label at upload, and say nothing was published?", "weight": 2, "evidence": "Quote the AI label note."},
+    {"id": "FI10", "text": "In the 9:16 masters, is all text inside the safe zone and readable on a phone?", "weight": 2, "evidence": "Name the second of any clipped or tiny text.", "quote": false},
+    {"id": "FI11", "text": "Is the picture free of text, logos or emblems inside AI-made images?", "weight": 2, "hard": true, "evidence": "Name the second of any text inside an image.", "quote": false},
+    {"id": "FI12", "text": "Is every claim shown or said found in research.md?", "weight": 2, "hard": true, "evidence": "Name any claim not in research.md.", "quote": false}
+  ]
+}

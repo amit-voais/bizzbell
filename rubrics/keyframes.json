@@ -1,0 +1,26 @@
+{
+  "stage": "keyframes",
+  "version": 1,
+  "title": "Keyframes: one still per live shot",
+  "layer": {"kind": "media", "files": ["keyframes/*.png"], "max_files": 12},
+  "references": ["screenplay.json", "characters/bible.md"],
+  "pass_score": 95,
+  "judge_notes": "File names are shot ids: keyframes/S03.png is shot S03 in screenplay.json. Each keyframe was made from the shot's character sheets, location plate and the previous approved keyframe, and is the first frame of its clip.",
+  "restructure": {"targets": ["keyframes/prompts.json"]},
+  "questions": [
+    {"id": "KF1", "text": "Does every live shot have its keyframe file?", "weight": 2, "check": "shot_files_exist", "args": {"folder": "keyframes", "ext": ".png"}},
+    {"id": "KF2", "text": "Is every keyframe in the screenplay's aspect?", "check": "media_aspect"},
+    {"id": "KF12", "text": "Does every keyframe prompt carry its shot's bibles word for word?", "weight": 2, "check": "prompts_carry_bibles", "args": {"file": "keyframes/prompts.json"}},
+    {"id": "KF13", "text": "Is every keyframe prompt free of requests to draw text, a logo or a number plate?", "weight": 2, "hard": true, "check": "prompt_file_no_text", "args": {"file": "keyframes/prompts.json"}},
+    {"id": "KF14", "text": "Did every keyframe pass its take checks within max_takes (none flagged)?", "check": "none_flagged", "args": {"dir": "keyframes"}},
+    {"id": "KF3", "text": "Does each keyframe show what its shot describes: framing, who is where, what each hand holds?", "weight": 3, "evidence": "Name each shot that differs and how."},
+    {"id": "KF4", "text": "Does each character look like their sheet and bible in every keyframe (face, hair, fixed details)?", "weight": 3, "evidence": "Name any shot where a face drifts."},
+    {"id": "KF5", "text": "Is the wardrobe the bible's in every keyframe?", "weight": 2, "evidence": "Name any shot with wrong clothes."},
+    {"id": "KF6", "text": "Is the light the same time of day and from the same side across shots in the same place?", "weight": 2, "evidence": "Name any shot that breaks it.", "scope": "layer"},
+    {"id": "KF7", "text": "Are hands right (five fingers, a real grip) and phone screens turned away from the lens?", "weight": 2, "evidence": "Name any wrong hand or screen."},
+    {"id": "KF8", "text": "Is every keyframe free of text, letters, logos, emblems, insignia and number plates?", "weight": 3, "hard": true, "evidence": "Quote nothing for a yes; for a no, name the file and where the text or mark is.", "quote": false},
+    {"id": "KF9", "text": "Does each keyframe look like a real photograph (no plastic skin, no warped faces or objects)?", "weight": 2, "evidence": "Name the least real shot."},
+    {"id": "KF10", "text": "Does each keyframe leave room for its shot's action, with nobody cut off awkwardly at the frame edge?", "evidence": "Name any cramped shot."},
+    {"id": "KF11", "text": "Is screen direction kept between shots (who is frame-left and frame-right)?", "evidence": "Name any flip.", "scope": "layer"}
+  ]
+}

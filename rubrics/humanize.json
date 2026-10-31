@@ -1,0 +1,23 @@
+{
+  "stage": "humanize",
+  "version": 1,
+  "title": "Humanized story: the spoken voice-over",
+  "layer": {"kind": "text", "files": ["story_humanized.md"]},
+  "references": ["story.md", "brief.md"],
+  "pass_score": 95,
+  "judge_notes": "The Voice-over section holds only the words the voice will say, one line per item (L01, L02, ...). In Hindi and Hinglish real spoken fillers (yaar, matlab, umm, na, haan, arre) belong in those words, placed where a person would say them. Other languages use their own natural spoken tone.",
+  "restructure": {"targets": ["story_humanized.md"]},
+  "questions": [
+    {"id": "HU1", "text": "Does story_humanized.md have the sections Tone and Voice-over?", "check": "has_sections", "args": {"headings": ["Tone", "Voice-over"]}},
+    {"id": "HU2", "text": "Do the spoken lines hold only words to be said, with no stage directions inside them?", "check": "no_stage_directions_in_vo"},
+    {"id": "HU3", "text": "In Hindi or Hinglish, does the voice-over use a few real spoken fillers without overdoing them?", "weight": 2, "check": "fillers_natural"},
+    {"id": "HU4", "text": "Does the voice-over keep every beat and the call to action of the chosen story?", "weight": 3, "evidence": "Quote the line for each beat."},
+    {"id": "HU5", "text": "Is the voice-over free of any claim, number or promise that is not in story.md?", "weight": 3, "hard": true, "evidence": "Name anything new.", "quote": false},
+    {"id": "HU6", "text": "Does it sound like a person talking to a friend (short sentences, natural rhythm), not an announcer or an ad read?", "weight": 3, "evidence": "Quote the most natural and the stiffest line."},
+    {"id": "HU7", "text": "Are the fillers (or, in other languages, the spoken turns of phrase) placed where a person would really say them, not one per sentence?", "weight": 2, "evidence": "Quote two lines with fillers."},
+    {"id": "HU8", "text": "Is it in the brief's language, with Hinglish written in Roman script?", "weight": 2, "evidence": "Quote one line."},
+    {"id": "HU9", "text": "Can it be spoken comfortably within the brief's length (about 2.5 words per second or fewer)?", "weight": 2, "evidence": "Give the word count and the length."},
+    {"id": "HU10", "text": "Is every spoken line its own list item with a line id (L01, L02, ...)?", "evidence": "Quote the first two items."},
+    {"id": "HU11", "text": "Is the brand or product name written the way the voice should say it?", "evidence": "Quote the line with the name."}
+  ]
+}

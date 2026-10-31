@@ -1,0 +1,66 @@
+{
+ "bizzbell": 1,
+ "_about": "The one screenplay schema every stage reads (documented in stages/04-screenplay.md; a full example is examples/bakery-diwali/screenplay.json). Times are film seconds. rows[] covers every second from 0 to duration-1. Bibles are pasted verbatim into prompts: the shot's characters, then its location, then its props.",
+ "title": "<working title>",
+ "slug": "<slug>",
+ "lang": "<en|hi|hinglish|...>",
+ "aspect": "9:16",
+ "fps": 24,
+ "duration": 4,
+ "continuity": [
+  "References first: every keyframe is made from the character sheets and location plates, never from text alone.",
+  "Paste the bibles verbatim into every prompt.",
+  "No text, logo, emblem or number plate inside any AI frame. Every word is an overlay."
+ ],
+ "bibles": {
+  "characters": {
+   "HERO": {"name": "<name>", "real_person": false, "photos": [],
+            "text": "<HERO (age): face, skin, hair, eyebrows and eyes, build, fixed details such as a ring or a scar. Wardrobe (scenes): every garment, colour, fabric, footwear.>"}
+  },
+  "locations": {
+   "PLACE": {"name": "<place>",
+             "text": "<PLACE: walls, furniture in fixed places, which side the window and door are on; the time of day, the light source and its side.>"}
+  },
+  "props": {
+   "PRODUCT": {"name": "<product>", "text": "<PRODUCT: shape, size, colour, material; no print, no logo and no writing on it.>"}
+  }
+ },
+ "voice": {"name": "priya", "style": "<who is speaking, to whom, in what mood; not an announcer>"},
+ "music": {"prompt": "<mood, instruments, tempo, length; no vocals, no choir, no humming>", "instrumental": true,
+           "seconds": 4},
+ "captions": {"max_chars": 42, "style": "<colour, weight, position inside the safe zone>"},
+ "shots": [
+  {"id": "S01", "start": 0, "end": 2, "kind": "live", "source": "keyframe",
+   "screen": "<what the viewer sees>",
+   "keyframe_prompt": "<framing, angle, who is where, what each hand holds>",
+   "motion": "<one small action that fits in the shot; who stays where>",
+   "camera": "<handheld / locked / slow push-in>",
+   "characters": ["HERO"], "location": "PLACE", "props": ["PRODUCT"], "refs": [],
+   "lines": ["L01"]},
+  {"id": "G02", "start": 2, "end": 4, "kind": "graphic", "source": "graphic",
+   "screen": "<end card>",
+   "graphic": {"type": "endcard", "title": "<brand name>", "subtitle": "<one line>", "cta": "<call to action>",
+               "sample": false},
+   "lines": ["L02"]}
+ ],
+ "rows": [
+  {"t": 0, "shot": "S01", "screen": "<what is seen>", "source": "keyframe", "camera": "<camera>",
+   "motion": "<motion>", "vo": "<words spoken in this second>", "caption": "<caption shown>", "sfx": "",
+   "music": "<bed starts>"},
+  {"t": 1, "shot": "S01", "screen": "<what is seen>", "source": "keyframe", "camera": "<camera>",
+   "motion": "<motion>", "vo": "<words>", "caption": "<caption>", "sfx": "", "music": ""},
+  {"t": 2, "shot": "G02", "screen": "<end card>", "source": "graphic", "camera": "static graphic",
+   "motion": "text animates in", "vo": "<words>", "caption": "<caption>", "sfx": "", "music": ""},
+  {"t": 3, "shot": "G02", "screen": "<end card holds>", "source": "graphic", "camera": "static graphic",
+   "motion": "holds", "vo": "", "caption": "", "sfx": "", "music": "<bed resolves>"}
+ ],
+ "lines": [
+  {"id": "L01", "shot": "S01", "at": 0.2, "end": 1.9, "text": "<caption text, Roman script>",
+   "tts": "<what the voice says; Devanagari for Hindi and Hinglish>", "hint": "<tone>"},
+  {"id": "L02", "shot": "G02", "at": 2.1, "end": 3.6, "text": "<call to action>", "tts": "<spoken>",
+   "hint": "<tone>"}
+ ],
+ "overlays": [],
+ "claims": [{"text": "<claim shown or said>", "source": "research.md C1"}],
+ "formats": ["9:16", "1:1", "16:9", "4:5"]
+}

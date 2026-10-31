@@ -80,7 +80,8 @@ class HygieneTests(unittest.TestCase):
         for p in package_files():
             rel = os.path.relpath(p, REPO)
             try:
-                text = open(p, encoding="utf-8").read()
+                with open(p, encoding="utf-8") as f:
+                    text = f.read()
             except (UnicodeDecodeError, OSError):
                 continue
             for tok in set(re.findall(r"[A-Za-z]+", text + " " + rel)):

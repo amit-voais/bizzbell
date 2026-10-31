@@ -66,7 +66,10 @@ was approved, runs `fn`, and settles with the INR the reply reports (`charged_in
 ## 3. Write a rubric (`rubrics/<stage>.json`)
 
 A project may override any rubric with `<project>/rubrics/<stage>.json`. Stage ids: `brief`, `research`,
-`story`, `humanize`, `screenplay`, `characters`, `keyframes`, `audio`, `video_a`, `video_b`, `final`.
+`story`, `humanize`, `screenplay`, `characters`, `keyframes`, `audio`, `video_a`, `video_b`, `final`. The media
+sub-layers have their own rubrics: `voice`, `music`, `mix` (the `audio` stage passes when all three pass) and
+`clips`, `version_a` (the `video_a` stage). `bb final` derives `final_a` and `final_b` from `final.json` (one per
+version) and writes them into the project's `rubrics/` folder.
 
 ```json
 {
