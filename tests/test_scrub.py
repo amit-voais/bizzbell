@@ -18,6 +18,8 @@ INSIDE = {5: {"1a74b31dd44546ca"}, 6: {"31388fe3ce236632", "b22e3c9fedd55f17"},
 # sha256(name)[:16]: matched as whole words only, case-insensitive
 WHOLE = {"5152cc21067154b8", "623f0b5584eb86d9", "a132c114be981e20"}
 FAKE_KEYS = {"hi_test_0000000000000000fake", "hi_test_1111111111111111envv", "hi_abcdefghijklmnopqrstuvwxyz"}
+# The public repo lives under the owner's GitHub account; its URL is allowed.
+REPO_URL = "https://github.com/amit-voais/bizzbell"
 KEY = re.compile(r"(?<![A-Za-z0-9])(?:hi|sk)_[A-Za-z0-9_\-]{16,}")
 
 
@@ -78,6 +80,7 @@ class ScrubTests(unittest.TestCase):
                     text = f.read()
             except (UnicodeDecodeError, OSError):
                 continue
+            text = text.replace(REPO_URL, "")
             if private_hits(text):
                 bad.append("%s: private name" % rel)
             if key_hits(text):

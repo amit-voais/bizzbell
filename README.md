@@ -20,18 +20,20 @@ Ek folder, ek key, aur brief likho: baaki agent sambhal lega.
 9. Version A with the Hidrogen video API, and Version B with HyperFrames, from the same screenplay
 10. Final: 9:16, 1:1, 16:9 (and 4:5), phone share copies, and a report with every score, flaw, claim and rupee spent
 
+**Sample:** [examples/sample-ad/sample_9x16.mp4](examples/sample-ad/sample_9x16.mp4), a real Hinglish ad made with this method.
+
 ## Install
 
 Claude Code:
 
 ```
-git clone <repo-url> ~/.claude/skills/bizzbell
+git clone https://github.com/amit-voais/bizzbell.git ~/.claude/skills/bizzbell
 ```
 
 Codex:
 
 ```
-git clone <repo-url> ~/.codex/skills/bizzbell
+git clone https://github.com/amit-voais/bizzbell.git ~/.codex/skills/bizzbell
 ```
 
 Then save your key and check the setup (from the skill folder):

@@ -59,6 +59,8 @@ class FixtureTests(unittest.TestCase):
 BANNED = {"b22e3c9fedd55f17", "31388fe3ce236632", "119f43df4c6ecc2d", "1a74b31dd44546ca", "623f0b5584eb86d9",
           "5152cc21067154b8", "6fd4125c253a7dd4", "d4900b84c3ca2029", "a29f6d7c87fff230", "a517be3674fe608c",
           "87e9390f745fcff8", "5f62d4944949941f", "a132c114be981e20", "7a95b2fc8d8f0e55"}
+# The public repo lives under the owner's GitHub account; its URL is allowed.
+REPO_URL = "https://github.com/amit-voais/bizzbell"
 SKIP_DIRS = {".git", ".tmp", "node_modules", "__pycache__"}
 ALLOWED_KEYS = {"hi_test_0000000000000000fake", "hi_test_1111111111111111envv", "hi_abcdefghijklmnopqrstuvwxyz"}
 
@@ -81,7 +83,7 @@ class HygieneTests(unittest.TestCase):
             rel = os.path.relpath(p, REPO)
             try:
                 with open(p, encoding="utf-8") as f:
-                    text = f.read()
+                    text = f.read().replace(REPO_URL, "")
             except (UnicodeDecodeError, OSError):
                 continue
             for tok in set(re.findall(r"[A-Za-z]+", text + " " + rel)):
