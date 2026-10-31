@@ -21,7 +21,9 @@ TEXT_ROLES = ("writer", "judge", "restructure")
 HYPERFRAMES_VERSION = "0.8.150"
 
 # Stage order of the spec (section 5). "outputs" are globs relative to the project; a stage counts as made when
-# every output glob matches at least one file. "gated" stages need `bb gate <id>` to pass.
+# every output glob matches at least one file, and for characters and keyframes also when every item the screenplay
+# asks for is in place (media.layers.items_present), so a failed make never shows as made. "gated" stages need
+# `bb gate <id>` to pass.
 STAGES = [
     {"id": "brief", "n": "0", "title": "Brief + budget", "outputs": ["brief.md"], "gated": False},
     {"id": "research", "n": "1", "title": "Research", "outputs": ["research.md"], "gated": True},
@@ -31,7 +33,7 @@ STAGES = [
      "outputs": ["screenplay.md", "screenplay.json"], "gated": True},
     {"id": "characters", "n": "5", "title": "Characters", "outputs": ["characters/bible.md"], "gated": True},
     {"id": "keyframes", "n": "6", "title": "Keyframes", "outputs": ["keyframes/*.png"], "gated": True},
-    {"id": "audio", "n": "7", "title": "Voice + music", "outputs": ["audio/*.wav"], "gated": True},
+    {"id": "audio", "n": "7", "title": "Voice + music", "outputs": ["audio/mix.wav"], "gated": True},
     {"id": "video_a", "n": "8A", "title": "Version A: Hidrogen video", "outputs": ["out/A/*.mp4"], "gated": True},
     {"id": "video_b", "n": "8B", "title": "Version B: HyperFrames", "outputs": ["out/B/*.mp4"], "gated": True},
     {"id": "final", "n": "9", "title": "Final", "outputs": ["out/report.md"], "gated": False},
@@ -279,8 +281,14 @@ def init(folder, brief, lang="en", aspect="9:16", slug=None):
 
 
 def outputs_present(root, stage_id):
-    """True when every output glob of the stage matches at least one file."""
-    return all(glob.glob(path(root, g)) for g in stage(stage_id)["outputs"])
+    """True when every output glob of the stage matches at least one file and, for a media stage with items
+    (characters, keyframes), every item the screenplay asks for is in place."""
+    if not all(glob.glob(path(root, g)) for g in stage(stage_id)["outputs"]):
+        return False
+    if stage_id in ("characters", "keyframes"):
+        from .media import layers
+        return layers.items_present(root, stage_id)
+    return True
 
 
 def stage_status(root, stage_id, state=None, settings=None):

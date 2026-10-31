@@ -13,7 +13,7 @@ import unittest
 from helpers import REPO, MockCase
 
 from bizzbell import cli, gate, ledger, project
-from bizzbell.checks import media as media_checks
+from bizzbell.checks import media as media_checks, text_layers
 from bizzbell.mock_server import mp4, wav
 
 RUBRICS = os.path.join(REPO, "rubrics")
@@ -334,6 +334,21 @@ class TextLayerChecks(MockCase):
                                                                     "2 days. [brief]", "- C4: Fastest in town.")
         self.write(self.root, "research.md", text)
         self.assertEqual(self.answer("claims_cited", "research")["answer"], "no")
+
+    def test_wrapped_claim_keeps_its_citation(self):
+        # a claim wrapped onto an indented continuation line used to lose its [S1] and fail hard question RS2
+        text = read(os.path.join(self.root, "research.md")).replace(
+            "- C4: Orders are delivered in the city within 2 days. [brief]",
+            "- C4: Orders are delivered in the city\n  within 2 days. [brief]")
+        self.write(self.root, "research.md", text)
+        self.assertEqual(self.answer("claims_cited", "research")["answer"], "yes")
+
+    def test_items_read_continuation_lines(self):
+        lines = ["- C1: first part", "  second part [S1]", "    third part", "- C2: alone [S2]",
+                 "  - nested item [S3]", "", "  after a blank line", "1. numbered", "\tcontinued [brief]"]
+        self.assertEqual(text_layers._items(lines), ["C1: first part second part [S1] third part",
+                                                    "C2: alone [S2]", "nested item [S3]",
+                                                    "numbered continued [brief]"])
 
     def test_fillers(self):
         vo = "# H\n\n## Tone\n\nx\n\n## Voice-over\n\n- L01: %s\n"

@@ -261,20 +261,39 @@ def evidence_found(evidence, haystack):
     """True when EVERY quoted part of `evidence` appears in `haystack` (case/whitespace-insensitive), so one real
     quote cannot carry an invented one.
 
-    Quoted spans ("..." or “...”) are checked if present, else the whole evidence; '...' splits fragments;
-    fragments shorter than 6 characters are ignored."""
+    Quoted spans ("..." or “...”) are checked if present, else the whole evidence; '...' splits fragments.
+    A quoted fragment needs 3+ characters (so a short quote such as "0-3 s" still counts); unquoted evidence
+    ignores fragments shorter than 6 characters."""
     hay = _norm_text(haystack)
-    spans = re.findall(r'"([^"]{6,})"', evidence) + re.findall(r"“([^”]{6,})”", evidence) or [evidence]
+    evidence = evidence.replace('\\"', '"')  # a judge that escapes inner quotes: \" is a plain quote
+    marks = [m.start() for m in re.finditer(r'["“”]', evidence)]
+    if not marks:
+        return _spans_found([evidence], hay, min_len=6)
+    # Pair the quote marks in order. (A regex for "6+ chars between quotes" skipped a short quote such as
+    # "0-3 s" and then paired the text BETWEEN two quotes, failing honest evidence.) A quote that itself holds
+    # quotes ("cut to "Star it" now") breaks the in-order pairing, so two other readings are tried: the whole
+    # text from the first quote mark to the last as one quote, and the flipped pairing. Under any one reading
+    # every quoted part must be in the layer.
+    pieces = re.split(r'["“”]', evidence)
+    if _spans_found(pieces[1::2], hay):
+        return True
+    if len(marks) > 2 and _spans_found([evidence[marks[0] + 1:marks[-1]]], hay):
+        return True
+    return len(pieces) > 3 and _spans_found(pieces[0::2], hay, need=2)
+
+
+def _spans_found(spans, hay, need=1, min_len=3):
+    """True when every fragment of every span is in `hay` and at least `need` spans had a fragment to check."""
     checked = 0
     for span in spans:
         frags = [f.strip(" .,:;'\"") for f in re.split(r"\.\.\.|…", span)]
-        frags = [f for f in frags if len(f) >= 6]
+        frags = [f for f in frags if len(f) >= min_len]
         if not frags:
             continue
         if not all(_norm_text(f) in hay for f in frags):
             return False
         checked += 1
-    return checked > 0
+    return checked >= need
 
 
 # ---------------------------------------------------------------- judge prompts

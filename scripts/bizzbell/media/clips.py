@@ -121,7 +121,9 @@ def _make_one(root, sp, shot, prompt, ph, kf, model, ms, seconds, slot_len, fix,
 
     def generate(n, fx):
         text = prompt + (("\nIMPORTANT: " + fx) if fx else "")
-        key = store.idem(root, "video", sid, ph, n, fx)
+        body = paid.video_body(text, kf, sp.aspect, ms["resolution"], seconds, model)
+        key = store.idem(root, "video", sid, ph, n, fx, model=model,
+                         body=store.request_body(body, [os.path.join(root, kf)]))
         mp4, _job = paid.call(root, "video", lambda: hidrogen.video(
             text, first_frame=os.path.join(root, kf), aspect=sp.aspect, resolution=ms["resolution"],
             seconds=seconds, model=model, idem=key),

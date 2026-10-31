@@ -179,7 +179,8 @@ def _make_one(root, sp, shot, prompt, ph, refs, model, ms, fix, extra, judge, lo
 
     def generate(n, fx):
         text = full_prompt(prompt, refs, fx)
-        key = store.idem(root, "keyframe", sid, ph, n, fx)
+        body = paid.image_body(text, [p for p, _l in refs], sp.aspect, ms["image_size"], model)
+        key = store.idem(root, "keyframe", sid, ph, n, fx, model=model, body=store.request_body(body, abs_refs))
         png, _resp = paid.call(root, "image", lambda: hidrogen.image(
             text, abs_refs, aspect=sp.aspect, size=ms["image_size"], model=model, idem=key),
             model=model, purpose="keyframe %s take %d" % (sid, n), ref=key,

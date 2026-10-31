@@ -37,6 +37,8 @@ what comes next, so you can stop and resume at any point.
   echo, grep or copy a key or a key file, and never write one into the project.
 - HTTP 402 (exit 5) means the Hidrogen wallet is empty and nothing was sent: tell the user in plain words and stop.
 - A safety-filter block (exit 8) is charged 0: rephrase as the visible behaviour and retry once.
+- HTTP 502/503 after the retries (exit 9) means the Hidrogen service is down and nothing more was spent: tell the
+  user, stop, and run the same command again later. Do not change prompts or models to "fix" it.
 - Every claim on screen comes from `research.md`; example numbers carry a "Sample" tag. No real brands, logos or
   competitors. Tell the user to switch on the platform's AI label when they upload.
 
@@ -134,6 +136,7 @@ written by `bb final`). A project can override any rubric with `<folder>/rubrics
 | 6 | 404: endpoint not live | media endpoints off: skip Version A (`bb mark video_a skipped`), still make Version B |
 | 7 | no budget / over the cap | permission point 1; never raise the cap yourself |
 | 8 | blocked by the safety filter (charged 0) | rephrase as visible behaviour, retry once |
+| 9 | 502/503: the Hidrogen service is unavailable (charged 0) | tell the user nothing more was spent; retry the same command later (it replays safely) |
 
 `--debug` on any command shows a traceback (keys are always redacted). No Opus model on the key: `bb doctor`
 picks the strongest available model and saves the reason; you can set `BB_RESTRUCTURE_MODEL`.

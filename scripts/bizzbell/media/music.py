@@ -56,7 +56,7 @@ def make(root, seconds=None, dry_run=False, rebuild_prompts=False, redo=False, f
 
     def generate(n, fx):
         text = prompt + ((" " + fx) if fx and not fx.startswith("Fix these") else "")
-        key = store.idem(root, "music", ph, n, fx)
+        key = store.idem(root, "music", ph, n, fx, model=model, body=paid.music_body(text, secs, model))
         outs, _job = paid.call(root, "music", lambda: hidrogen.music(
             text, seconds=secs, instrumental=True, model=model, idem=key),
             model=model, purpose="music bed take %d" % n, quote_params={"seconds": secs}, ref=key)

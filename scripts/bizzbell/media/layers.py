@@ -4,6 +4,8 @@ Rubric ids: characters, keyframes (the stage ids themselves), and the sub-layers
 and clips, version_a (stage video_a). The stage follows its sub-layers in project.json: passed when every one has
 passed (or was skipped), failed as soon as one fails, and out of passed again when one is no longer passed. `bb gate <layer>` and `bb restructure <layer>` accept these ids too; `bb gate audio`
 / `bb gate video_a` still work when those rubrics exist."""
+import os
+
 from .. import gate, project, restructure
 from ..errors import UsageError
 
@@ -19,6 +21,21 @@ def version_a_rubric(root):
         return "version_a"
     except UsageError:
         return "video_a"
+
+
+def items_present(root, stage_id):
+    """True when every sheet and plate (characters) or every live shot's keyframe (keyframes) the screenplay asks
+    for is in the project. False without a readable screenplay or with nothing to make."""
+    from . import characters, keyframes, screenplay
+    try:
+        sp = screenplay.load(root)
+    except (UsageError, ValueError):
+        return False
+    if stage_id == "characters":
+        files = [characters.file_for(k) for k in characters.resolve(sp, [])]
+    else:
+        files = [os.path.join(keyframes.D, "%s.png" % s["id"]) for s in sp.live_shots()]
+    return bool(files) and all(os.path.isfile(os.path.join(root, f)) for f in files)
 
 
 def run_gate(root, layer, passes=None):

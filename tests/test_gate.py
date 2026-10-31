@@ -71,6 +71,22 @@ class ScoringTests(unittest.TestCase):
         self.assertFalse(gate.evidence_found('"a dragon flies over the shop"', hay))
         self.assertTrue(gate.evidence_found("The baker lifts the lid", hay))
 
+    def test_evidence_found_short_quote_first(self):
+        # a short quote ("0-3 s") used to be skipped, and the prose BETWEEN two quotes was then paired as a quote
+        hay = "0-3 s: the hook. The baker lifts the lid.\n3-6 s: the whole lane leans in."
+        self.assertTrue(gate.evidence_found('The hook sits at "0-3 s" and says "The baker lifts the lid"', hay))
+        self.assertTrue(gate.evidence_found('Timed "0-3 s"', hay))
+        self.assertFalse(gate.evidence_found('Timed "9-12 s"', hay))
+        self.assertFalse(gate.evidence_found('"0-3 s" and "a dragon flies over"', hay))
+
+    def test_evidence_found_quote_holding_quotes(self):
+        hay = 'At 12 s the voice says cut to "Star it" now, and the end card shows the logo.'
+        self.assertTrue(gate.evidence_found('"cut to "Star it" now"', hay))
+        self.assertTrue(gate.evidence_found('The CTA: "cut to \\"Star it\\" now"', hay))
+        self.assertTrue(gate.evidence_found('“cut to "Star it" now”', hay))
+        self.assertFalse(gate.evidence_found('"pay today "Buy it" before noon"', hay))
+        self.assertFalse(gate.evidence_found('"the dragon roars "Star it" loudly"', hay))
+
 
 class GateRunTests(MockCase):
     def setUp(self):

@@ -90,7 +90,7 @@ def audio_ok(path, min_s=0.2):
 
 
 def _tts_call(root, text, voice, model, style, purpose, idem_parts):
-    key = store.idem(root, *idem_parts)
+    key = store.idem(root, *idem_parts, model=model, body=paid.tts_body(text, voice, model, style))
     audio, _meta = paid.call(root, "voice", lambda: hidrogen.tts(text, voice=voice, model=model, style=style,
                                                                  fmt="wav", idem=key),
                              model=model, purpose=purpose, quote_params={"chars": len(text), "voice": voice}, ref=key)

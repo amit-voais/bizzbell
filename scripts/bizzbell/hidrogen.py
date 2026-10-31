@@ -7,7 +7,8 @@
   so a retry never pays twice.
 - The gateway drops `role: system` messages: chat() moves instructions into the top-level "system_prompt".
 - 402 -> PaymentRequired (wallet empty, nothing sent), 404 -> NotAvailable (endpoint not live),
-  safety block -> Blocked (charged 0).
+  502/503 still failing after the retries -> Unavailable (the gateway is down; charged 0), safety block -> Blocked
+  (charged 0).
 - Billing is INR. charged_inr(resp) reads what a response says it cost (None when it does not say)."""
 import base64
 import json
@@ -25,6 +26,7 @@ from .errors import BBError
 DEFAULT_API = "https://api.hidrogen.in"
 USER_AGENT = "bizzbell/0.1"
 RETRY_CODES = (429, 500, 502, 503, 504)
+UNAVAILABLE_CODES = (502, 503)   # the gateway did not take the request: nothing was charged
 RETRY_BASE = 2.0          # seconds; retry i waits RETRY_BASE * (i + 1). Tests set it to 0.
 _SEEN_KEYS = set()        # keys read in this process, so redact() can remove them anywhere
 
@@ -56,6 +58,12 @@ class NotAvailable(HidrogenError):
     """HTTP 404: this endpoint is not live on the gateway (yet)."""
 
     exit_code = 6
+
+
+class Unavailable(HidrogenError):
+    """HTTP 502/503 on every try: the gateway (or the model behind it) is down. Nothing was charged."""
+
+    exit_code = 9
 
 
 class Blocked(HidrogenError):
@@ -167,6 +175,9 @@ def _error_for(code, txt, path):
     if code == 401:
         return HidrogenError("Hidrogen did not accept the key (HTTP 401). Check it with: python3 scripts/bb.py "
                              "doctor, or save a new one with: python3 scripts/bb.py key", code, txt)
+    if code in UNAVAILABLE_CODES:
+        return Unavailable("the Hidrogen service is unavailable right now (HTTP %d). Nothing more was spent; what "
+                           "is already made is kept. Try again later." % code, code, txt)
     if _blocked_text(txt):
         return Blocked("the safety filter blocked this request (charged 0). Rephrase it as plain visible "
                        "behaviour and try once more.", code, txt)
@@ -201,6 +212,7 @@ def request(method, path, body=None, timeout=300, raw=False, idem=None, tries=4,
                 return json.loads(payload.decode("utf-8"))
         except urllib.error.HTTPError as e:
             txt = e.read().decode("utf-8", errors="replace")[:2000]
+            e.close()
             if e.code in RETRY_CODES and i < tries - 1:
                 last = "HTTP %d" % e.code
                 time.sleep(RETRY_BASE * (i + 1))

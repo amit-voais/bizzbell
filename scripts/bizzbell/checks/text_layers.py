@@ -30,8 +30,23 @@ def section_lines(text, word):
     return out
 
 
+ITEM = re.compile(r"^\s*(?:[-*]|\d+[.)])\s+(.+)$")
+
+
 def _items(lines):
-    return [m.group(1).strip() for m in (re.match(r"^\s*(?:[-*]|\d+[.)])\s+(.+)$", ln) for ln in lines) if m]
+    """Markdown list items, each with its continuation lines (indented lines that follow it) joined on, so a claim
+    wrapped onto a second line keeps its [S1]. A blank line, a heading or an unindented line ends the item."""
+    items, open_item = [], False
+    for ln in lines:
+        m = ITEM.match(ln)
+        if m:
+            items.append(m.group(1).strip())
+            open_item = True
+        elif open_item and ln.strip() and ln[:1] in (" ", "\t"):
+            items[-1] += " " + ln.strip()
+        else:
+            open_item = False
+    return items
 
 
 @check("sources_dated")

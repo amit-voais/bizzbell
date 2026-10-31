@@ -120,11 +120,22 @@ def file_hash(path):
     return h.hexdigest()[:12]
 
 
-def idem(root, *parts):
-    """A stable Idempotency-Key for one take: a re-run after a crash replays instead of paying twice."""
+def idem(root, *parts, model=None, body=None):
+    """A stable Idempotency-Key for one take: an identical re-run (after a crash or a 5xx) replays instead of
+    paying twice. The model and a hash of the request body are part of the key, so a changed request (another
+    model, prompt, reference image or setting) gets a fresh key and is never answered with a reply the gateway
+    cached for the old one (a cached failure included). `body`: what is sent, JSON-able (request_body())."""
     slug = project.load_state(root).get("slug", "")
     raw = "|".join([slug, os.path.basename(root)] + [str(p) for p in parts])
+    if model is not None or body is not None:
+        raw += "|model=%s|body=%s" % (model or "", phash(body) if body is not None else "")
     return "bb-" + hashlib.sha256(raw.encode("utf-8")).hexdigest()[:32]
+
+
+def request_body(body, files=()):
+    """`body` (a paid.*_body() dict) plus the content hash of every file it sends, for idem(): a reference image
+    made again changes the key even when its path does not."""
+    return dict(body, files=[file_hash(f) for f in files])
 
 
 # ---------------------------------------------------------------- files

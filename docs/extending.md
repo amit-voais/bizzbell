@@ -147,4 +147,5 @@ Built-in checks: `files_exist`, `word_count`, `json_valid`, `contains_none`, `ha
 `HIDROGEN_API_URL=<url> HIDROGEN_API_KEY=hi_test_0000000000000000fake`. In tests:
 `with MockHidrogen(["media404"]) as m: ...` (see `tests/helpers.py`). Behaviours: `pay402`, `media404`, `block`,
 `slow_job`, `flaky`, `no_opus`, `judge_low_then_high`, `judge_always_low`, `judge_disagree`, `judge_hard_no`,
-`judge_bad_json_once`. Switch at runtime with `POST /_mock/behaviour {"set": [...]}`.
+`judge_bad_json_once`, and for an outage `down502`, `down503` (with `cache_errors` to replay a failed reply for its
+Idempotency-Key, as a caching gateway would). Switch at runtime with `POST /_mock/behaviour {"set": [...]}`.

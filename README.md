@@ -110,6 +110,7 @@ without your yes.
 | "no approved budget" / over the cap (exit 7) | the ledger refused a paid call | approve or raise the budget: `bb budget set <inr>` / `bb budget raise <inr>` |
 | a layer keeps failing (exit 4) | three rewrites did not reach 95 | the agent shows the failing questions: accept, edit by hand, or allow one more round |
 | blocked by the safety filter (exit 8) | the prompt was refused, charged 0 | the agent rephrases it as the visible action and retries once |
+| "the Hidrogen service is unavailable" (exit 9) | the gateway answered 502/503 on every try; nothing more was spent | wait a few minutes and run the same command again |
 | key missing | no `HIDROGEN_API_KEY` and no key file | run `python3 scripts/bb.py key` yourself |
 
 Add `--debug` to any command for a traceback (keys are always redacted).

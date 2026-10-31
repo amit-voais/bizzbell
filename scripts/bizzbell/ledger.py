@@ -208,8 +208,8 @@ class Ledger(object):
     def call(self, kind, fn, model="", purpose="", units=1, estimate_inr=None, quote_params=None, ref=""):
         """Reserve, run fn(), settle with the cost the reply reports. Returns fn()'s result.
 
-        Charged 0 when fn raises PaymentRequired, NotAvailable, Blocked or another 4xx; counted at the
-        reservation ("uncertain") for network/5xx failures."""
+        Charged 0 when fn raises PaymentRequired, NotAvailable, Unavailable (502/503), Blocked or another 4xx;
+        counted at the reservation ("uncertain") for network failures and other 5xx."""
         inr = estimate_inr
         if inr is None:
             inr, _src = self.estimate(kind, model, units, quote_params)
@@ -217,7 +217,8 @@ class Ledger(object):
         try:
             result = fn()
         except hidrogen.HidrogenError as e:
-            if isinstance(e, (hidrogen.PaymentRequired, hidrogen.NotAvailable, hidrogen.Blocked)) or \
+            if isinstance(e, (hidrogen.PaymentRequired, hidrogen.NotAvailable, hidrogen.Unavailable,
+                              hidrogen.Blocked)) or \
                     (e.status is not None and 400 <= e.status < 500):
                 self.release(eid, note=type(e).__name__)
             else:

@@ -170,7 +170,8 @@ def _make_one(root, sp, key, prompt, ph, refs, aspect, model, ms, fix, extra, ju
 
     def generate(n, fx):
         text = full_prompt(root, sp, key, prompt, refs, fx)
-        idem = store.idem(root, "image", key, ph, n, fx)
+        body = paid.image_body(text, refs, aspect, ms["image_size"], model)
+        idem = store.idem(root, "image", key, ph, n, fx, model=model, body=store.request_body(body, abs_refs))
         png, _resp = paid.call(root, "image", lambda: hidrogen.image(
             text, abs_refs, aspect=aspect, size=ms["image_size"], model=model, idem=idem),
             model=model, purpose="%s take %d" % (key, n), ref=idem,

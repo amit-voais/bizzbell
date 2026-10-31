@@ -34,6 +34,9 @@ BEHAVIOURS = {
     "block": "images and voice answer content_blocked; video and music jobs end blocked",
     "slow_job": "video/music jobs need 3 extra polls before they finish",
     "flaky": "the first try of every POST answers 503 (retry with the same Idempotency-Key succeeds)",
+    "down502": "every API call (not /_mock or /_files) answers 502 Bad Gateway, every try (an outage)",
+    "down503": "every API call (not /_mock or /_files) answers 503 Service Unavailable, every try (an outage)",
+    "cache_errors": "an outage reply (down502/down503) is cached under its Idempotency-Key and replayed for it",
     "no_opus": "/v1/models lists no Opus model",
     "judge_low_then_high": "the judge fails half the questions until a restructure reply was sent, then passes all",
     "judge_always_low": "the judge always fails half the questions",
@@ -215,6 +218,14 @@ class Handler(BaseHTTPRequestHandler):
             self.st.files[fid] = (data, mime)
         return "http://%s:%d/_files/%s" % (self.server.server_address[0], self.server.server_address[1], fid)
 
+    def _down(self):
+        """(code, error code, message) of an outage reply when a down behaviour is on, else None."""
+        if self.st.has("down502"):
+            return 502, "bad_gateway", "upstream unavailable"
+        if self.st.has("down503"):
+            return 503, "unavailable", "service unavailable"
+        return None
+
     def _record(self, method, body):
         with self.st.lock:
             self.st.requests.append({"method": method, "path": self.path, "body": body,
@@ -246,6 +257,8 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/_mock/state":
             return self._send(200, {"behaviours": sorted(self.st.behaviours), "requests": len(self.st.requests),
                                     "charges": len(self.st.charges), "restructured": self.st.restructured})
+        if self._down():
+            return self._err(*self._down())
         if not self._authed():
             return self._err(401, "unauthorized", "missing or bad key")
         if self.st.has("media404") and path.startswith(MEDIA_PREFIXES):
@@ -278,6 +291,12 @@ class Handler(BaseHTTPRequestHandler):
         if idem and idem in self.st.idem:
             code, payload, ctype, headers = self.st.idem[idem]
             return self._send(code, payload, ctype, headers)
+        if self._down():
+            res = self._err(*self._down())
+            if idem and self.st.has("cache_errors"):
+                with self.st.lock:
+                    self.st.idem[idem] = res
+            return res
         if self.st.has("media404") and path.startswith(MEDIA_PREFIXES):
             return self._err(404, "not_found", "no such endpoint")
         if self.st.has("pay402") and path != "/v1/media/quote":
