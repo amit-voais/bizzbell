@@ -91,11 +91,18 @@ def _spaceless(ch):
             or 0x20000 <= cp <= 0x2FFFF)
 
 
+def unspaced(ch):
+    """Thai, Lao, Myanmar or Khmer: written without spaces between words, with no way to find the words without a
+    dictionary, so each letter and its marks counts as one token."""
+    cp = ord(ch)
+    return 0x0E00 <= cp <= 0x0EFF or 0x1000 <= cp <= 0x109F or 0x1780 <= cp <= 0x17FF
+
+
 def words(text):
     """Comparable words in any script. Keeps combining marks, which Python's \\w does not: a Devanagari vowel sign is
     a mark, and `[^\\W_]+` would break a word at every one. Removes joiners and folds case; chandrabindu and anusvara
     compare equal, because the same Hindi word is typed with either."""
-    text = unicodedata.normalize("NFKC", text).casefold().replace("ँ", "ं")
+    text = unicodedata.normalize("NFKC", text).casefold().replace("ँ", "ं").replace("i\u0307", "i")
     out, cur = [], []
     for i, ch in enumerate(text):
         cat = unicodedata.category(ch)
@@ -106,6 +113,10 @@ def words(text):
                 out.append("".join(cur))
                 cur = []
             out.append(ch)
+        elif cat[0] == "L" and unspaced(ch):
+            if cur:
+                out.append("".join(cur))
+            cur = [ch]
         elif cat[0] in "LMN":
             cur.append(ch)
         elif ch in "'’" and cur and i + 1 < len(text) and unicodedata.category(text[i + 1])[0] == "L":
@@ -124,13 +135,15 @@ def _phrases(*groups):
 
 # Heard anywhere in a line. Several are ordinary words too (na, haan, yaar), which is why they are only ever a cue.
 FILLER_ANYWHERE = _phrases("you know|i mean", "matlab|matlb|yaani|yani|yaniki|yaar|haan|haa|han|na|naa|arre|arrey|arey",
-                           "उम|उम्म|उम्म्म|अं|अम्म|हम्म|मतलब|यानी|यानि|यानिकी|यार|हाँ|हां|ना|न|अरे")
+                           "उम|उम्म|उम्म्म|अं|अम्म|हम्म|मतलब|यानी|यानि|यानिकी|यार|हाँ|हां|ना|न|अरे",
+                           "o sea|en plan", "hani")
 # Filler only when the whole line is nothing else: in a sentence these are normal words.
 FILLER_LINE_ONLY = _phrases("so|okay|ok|right|yeah|like|well|anyway|basically|actually|let me see|hold on",
                             "acha|accha|achha|bas|toh|to|dekho|suno|theek hai|thik hai",
-                            "अच्छा|बस|तो|देखो|सुनो|ठीक है")
+                            "अच्छा|बस|तो|देखो|सुनो|ठीक है",
+                            "este|pues|bueno|vale|a ver|eh", "işte|şey|tamam|ee")
 _HESITATION = re.compile(r"^(?:u+m+|u+h+|e+r+|e+r+m+|a+h+|h+m+|m{2,}|h+a{2,}n*|na{2,}|ar{2,}e+y*|are+y+|उम्+)$")
-_LONGEST = 6
+_LONGEST = 16
 
 
 def _match_at(toks, i, lexicons):

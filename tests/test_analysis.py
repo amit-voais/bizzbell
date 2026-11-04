@@ -130,6 +130,54 @@ class EditTool(unittest.TestCase):
                                             "00:00:02,000\n%s\n" % (a, b))
             self.assertEqual([c["kind"] for c in edit.analyse(path)["cuts"]], ["retake"], name)
 
+    def _two_lines(self, tmp, name, a, b):
+        return tmp.write(name + ".srt", "1\n00:00:00,000 --> 00:00:02,000\n%s\n\n2\n00:00:02,100 --> "
+                                        "00:00:04,000\n%s\n" % (a, b))
+
+    def test_short_line_full_of_fillers_said_twice_is_a_retake(self):
+        tmp = _Tmp(self)
+        line = "अरे यार, मतलब ये देखो"
+        cuts = edit.analyse(self._two_lines(tmp, "hi", line, line))["cuts"]
+        self.assertEqual([c["kind"] for c in cuts], ["retake"])
+
+    def test_same_fillers_then_different_words_is_not_a_retake(self):
+        tmp = _Tmp(self)
+        path = self._two_lines(tmp, "hi2", "अरे यार, मतलब ये देखो", "अरे यार, मतलब वो सुनो")
+        self.assertEqual(edit.analyse(path)["cuts"], [])
+
+    def test_two_word_line_said_twice_stays_a_choice(self):
+        tmp = _Tmp(self)
+        self.assertEqual(edit.analyse(self._two_lines(tmp, "two", "ये देखो", "ये देखो"))["cuts"], [])
+
+    def test_retakes_in_scripts_written_without_spaces(self):
+        tmp = _Tmp(self)
+        for name, a, b in (("th", "สวัสดีครับวันนี้เราจะมา", "สวัสดีครับวันนี้เราจะมาดูร้านใหม่"),
+                           ("lo", "ສະບາຍດີມື້ນີ້ພວກເຮົາ", "ສະບາຍດີມື້ນີ້ພວກເຮົາຈະມາເບິ່ງ"),
+                           ("km", "សួស្តីថ្ងៃនេះយើងនឹងមក", "សួស្តីថ្ងៃនេះយើងនឹងមកមើលហាង"),
+                           ("my", "မင်္ဂလာပါဒီနေ့ကျွန်တော်တို့", "မင်္ဂလာပါဒီနေ့ကျွန်တော်တို့ဆိုင်ကိုကြည့်မယ်"),
+                           ("th_same", "สวัสดีครับ", "สวัสดีครับ")):
+            cuts = edit.analyse(self._two_lines(tmp, name, a, b))["cuts"]
+            self.assertEqual([c["kind"] for c in cuts], ["retake"], name)
+
+    def test_thai_lines_sharing_only_a_greeting_are_not_a_retake(self):
+        tmp = _Tmp(self)
+        path = self._two_lines(tmp, "th2", "สวัสดีครับวันนี้อากาศดี", "สวัสดีครับพรุ่งนี้เราไปตลาด")
+        self.assertEqual(edit.analyse(path)["cuts"], [])
+
+    def test_spanish_and_turkish_fillers_need_no_flag(self):
+        tmp = _Tmp(self)
+        rep = edit.analyse(tmp.write("es.srt", "1\n00:00:00,000 --> 00:00:01,000\nEste\n\n2\n00:00:01,100 --> "
+                                               "00:00:03,000\nes un buen precio, o sea, barato\n"))
+        self.assertEqual(rep["review"]["counts"], {"este": 1, "o sea": 1})
+        rep = edit.analyse(tmp.write("tr.srt", "1\n00:00:00,000 --> 00:00:01,000\nİşte\n\n2\n00:00:01,100 --> "
+                                               "00:00:03,000\nbu fiyat yani çok iyi\n"))
+        self.assertEqual(rep["review"]["counts"], {"işte": 1, "yani": 1})
+
+    def test_este_inside_a_spanish_sentence_is_a_normal_word(self):
+        tmp = _Tmp(self)
+        rep = edit.analyse(tmp.write("es2.srt", "1\n00:00:00,000 --> 00:00:02,000\neste producto es bueno\n"))
+        self.assertEqual(rep["review"]["counts"], {})
+
     def test_extra_filler_in_any_language(self):
         tmp = _Tmp(self)
         path = tmp.write("x.srt", "1\n00:00:00,000 --> 00:00:01,000\nO zaman şey\n")

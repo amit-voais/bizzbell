@@ -19,19 +19,45 @@ PATHS = {
     "chat": '<path d="M4 5.5h16v10H9.5L5 19.5v-4H4z"/><path d="M8 10.5h8"/>',
     "tag": '<path d="M3.5 12.2V4.5a1 1 0 011-1h7.7l8.3 8.3-8.7 8.7z"/><circle cx="8" cy="8" r="1.4"/>',
     "leaf": '<path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14z"/><path d="M5 19l7-7"/>',
+    "play": '<path d="M8 5l11 7-11 7z"/>',
+    "key": '<circle cx="8" cy="15" r="4"/><path d="M11 12l8.5-8.5"/><path d="M16 7l3 3"/>',
+    "film": '<rect x="3.5" y="4.5" width="17" height="15" rx="1.5"/><path d="M8 4.5v15M16 4.5v15M3.5 12h17"/>'
+            '<path d="M3.5 8.2H8M3.5 15.8H8M16 8.2h4.5M16 15.8h4.5"/>',
+    "layers": '<path d="M12 3.5l8.5 4.5-8.5 4.5L3.5 8z"/><path d="M3.5 12l8.5 4.5 8.5-4.5"/>'
+              '<path d="M3.5 16l8.5 4.5 8.5-4.5"/>',
+    "shield": '<path d="M12 3l7.5 2.8v5.7c0 4.6-3.1 7.7-7.5 9.5-4.4-1.8-7.5-4.9-7.5-9.5V5.8z"/>',
+    "mic": '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0013 0"/>'
+           '<path d="M12 18v3"/>',
+    "camera": '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8.5 7l1.5-3h4l1.5 3"/>'
+              '<circle cx="12" cy="13.5" r="3.5"/>',
+    "music": '<path d="M9 18V5.5l10-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>',
+    "user": '<circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c1-4 4-6 7.5-6s6.5 2 7.5 6"/>',
+    "code": '<path d="M8.5 7L3.5 12l5 5"/><path d="M15.5 7l5 5-5 5"/>',
+    "search": '<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5l5 5"/>',
+    "chart": '<path d="M4 20.5h16"/><path d="M7 16.5v-5M12 16.5v-10M17 16.5v-7"/>',
+    "mail": '<rect x="3" y="5.5" width="18" height="13" rx="1.5"/><path d="M3.5 7l8.5 6.5L20.5 7"/>',
 }
 ALIASES = {"tick": "check", "done": "check", "cta": "arrow", "go": "arrow", "next": "arrow", "rating": "star",
            "offer": "gift", "box": "gift", "time": "clock", "hours": "clock", "call": "phone", "app": "phone",
            "location": "pin", "map": "pin", "new": "spark", "magic": "spark", "love": "heart", "shop": "cart",
            "buy": "cart", "fast": "bolt", "speed": "bolt", "message": "chat", "whatsapp": "chat", "price": "tag",
-           "sale": "tag", "fresh": "leaf", "natural": "leaf"}
+           "sale": "tag", "fresh": "leaf", "natural": "leaf", "video": "film", "safe": "shield", "secure": "shield",
+           "stack": "layers", "voice": "mic", "person": "user", "photo": "camera", "email": "mail", "find": "search"}
+
+
+def _key(name):
+    key = str(name or "").strip().lower()
+    return ALIASES.get(key, key)
+
+
+def unknown(names):
+    """The names, in order, that have no icon. An empty name is fine: it means no icon was asked for."""
+    return [str(n) for n in names if _key(n) and _key(n) not in PATHS]
 
 
 def svg(name, size=48, stroke=1.8, cls="bb-icon"):
     """Inline SVG for an icon name (aliases allowed); '' for an unknown or empty name."""
-    key = str(name or "").strip().lower()
-    key = ALIASES.get(key, key)
-    body = PATHS.get(key)
+    body = PATHS.get(_key(name))
     if not body:
         return ""
     return ('<svg class="%s" width="%d" height="%d" viewBox="0 0 24 24" fill="none" stroke="currentColor" '

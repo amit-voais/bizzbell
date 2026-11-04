@@ -240,6 +240,20 @@ class ComposeTests(TempDirCase):
         self.assertIsNone(compose.image_size(os.path.join(self.tmp, "none.png")))
 
 
+class IconTests(unittest.TestCase):
+    def test_icons_a_real_screenplay_asked_for_exist(self):
+        for name in ("play", "key", "film", "layers", "shield", "check", "star"):
+            self.assertIn("<svg", icons.svg(name), name)
+
+    def test_the_screenplay_stage_lists_every_icon_and_no_other(self):
+        with open(os.path.join(REPO, "stages", "04-screenplay.md"), encoding="utf-8") as f:
+            listed = re.search(r"Icon names: ([^.\n]+)\.", f.read()).group(1)
+        self.assertEqual(sorted(n.strip(" `") for n in listed.split(",")), sorted(icons.PATHS))
+
+    def test_unknown_icon_is_reported_not_dropped_silently(self):
+        self.assertEqual(icons.unknown(["play", "Tick", "", "rocket-ship"]), ["rocket-ship"])
+
+
 class RunnerTests(TempDirCase):
     def test_pin_from_settings(self):
         root = make_project(self.tmp)

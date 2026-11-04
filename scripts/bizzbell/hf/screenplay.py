@@ -18,6 +18,7 @@ import os
 import re
 
 from .. import util
+from . import icons
 from ..errors import UsageError
 
 IMAGE_EXT = (".png", ".jpg", ".jpeg", ".webp")
@@ -257,6 +258,8 @@ def load(root):
                 "captions": s.get("captions", True) is not False, "sample": bool(s.get("sample", False))}
         if is_graphic:
             shot["graphic"] = _graphic(s, kind)
+            for name in icons.unknown([shot["graphic"]["icon"]]):
+                warnings.append("shot %s asks for the icon \"%s\", which does not exist; it shows no icon" % (sid, name))
             shot["image"] = _image_for(root, s) if any(isinstance(s.get(k), str) for k in ("image", "keyframe")) \
                 else None
             if shot["graphic"]["type"] == "endcard":

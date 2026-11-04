@@ -37,7 +37,7 @@ A bad file gives a one-line message and exit 1 (exit 2 for a missing file or a w
   most 30 s (the first 10% when the length is unknown); a drop is over 0.8 points in one step; the words shown run
   from 2 s before it to its end. The report says how the axis was decided, and says so when it is a guess.
 - **edit:** suggested cuts (`dead`: a gap between spoken lines over 0.45 s; `retake`: a line opening with the same
-  words as the next, the earlier one marked) and, apart from them, filler cues to review. It touches no media.
+  words as the next, or the same whole line said twice, the earlier one marked) and, apart from them, filler cues to review. It touches no media.
 - **outliers:** videos at 1.5x or more of their own channel's median in your file. Channels with too few videos are
   listed and not scored.
 

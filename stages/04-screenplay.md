@@ -36,6 +36,8 @@
 | `overlays[]` | extra on-screen words: `text`, `start`, `end`, `sample` |
 | `claims[]` | each claim shown or said, with its `source` (research.md C-id) |
 
+Icon names: `arrow`, `bolt`, `camera`, `cart`, `chart`, `chat`, `check`, `clock`, `code`, `film`, `gift`, `heart`, `key`, `layers`, `leaf`, `mail`, `mic`, `music`, `phone`, `pin`, `play`, `search`, `shield`, `spark`, `star`, `tag`, `user`. An unknown name shows no icon, and `bb version_b` says so.
+
 The prompt for a live shot is built as: `keyframe_prompt`, the camera, then the shot's bibles verbatim (characters,
 location, props), then `continuity`. Write each bible once; never paraphrase it in a shot.
 

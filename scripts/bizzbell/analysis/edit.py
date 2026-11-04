@@ -1,25 +1,35 @@
 """bb analyse edit: a transcript to an edit decision list. It only reads the transcript and never touches media.
 
 Adapted from yt-edit/deadair.py in Jakeschincariol/youtube-agent-skill (MIT, see NOTICE)."""
-from .text import clip, filler_words, load_cues, only_filler, source_name, words
+from .text import clip, filler_words, load_cues, only_filler, source_name, unspaced, words
 
 DEFAULT_FLOOR = 0.45
 MIN_RESTART_WORDS = 3
 RESTART_WORDS = 5
+UNSPACED_RESTART_LETTERS = 10
 
 NOTES = [
     "Heuristic: all of this is worked out from the words and timings in the transcript, not from the audio.",
     "A dead-air cut is a gap between spoken lines. The transcript cannot hear music, a sound effect or a planned "
     "pause, so check each one against the film.",
-    "A retake is two lines in a row that open with the same words. A repeat said on purpose looks the same.",
+    "A retake is two lines in a row that open with the same words, or the same whole line said twice. A repeat said "
+    "on purpose looks the same.",
     "Filler cues are for review and are not counted in the suggested cuts. In a Hindi or Hinglish voice-over they "
     "are often written in on purpose, and several of them (na, haan, yaar) are also ordinary words.",
 ]
 
 
 def _is_restart(earlier, later):
-    n = min(len(earlier), len(later), RESTART_WORDS)
-    return n >= MIN_RESTART_WORDS and earlier[:n] == later[:n]
+    """`earlier` and `later` are (all words, words without fillers). Fillers are dropped so that a false start with an
+    extra "umm" still matches, but a short line can have too few words left: the whole line said twice counts too."""
+    (all_a, kept_a), (all_b, kept_b) = earlier, later
+    if kept_a and kept_b and all_a == all_b and len(all_a) >= MIN_RESTART_WORDS:
+        return True
+    n = min(len(kept_a), len(kept_b))
+    if n and unspaced(kept_a[0][0]):      # a token here is one letter, so it takes more of them to mean anything
+        return n >= UNSPACED_RESTART_LETTERS and kept_a[:UNSPACED_RESTART_LETTERS] == kept_b[:UNSPACED_RESTART_LETTERS]
+    n = min(n, RESTART_WORDS)
+    return n >= MIN_RESTART_WORDS and kept_a[:n] == kept_b[:n]
 
 
 def _union_seconds(spans):
@@ -59,10 +69,10 @@ def analyse(path, floor=DEFAULT_FLOOR, extra_fillers=()):
             counts[word] = counts.get(word, 0) + 1
         if filler_line or not toks:
             continue
-        if last_speech and _is_restart(last_speech[1], kept):
+        if last_speech and _is_restart(last_speech[1], (toks, kept)):
             cuts.append({"kind": "retake", "start": last_speech[0][0], "end": last_speech[0][1],
                          "why": "same opening as the next line: \"%s\"" % clip(last_speech[0][2], 60)})
-        last_speech = ((start, end, text), kept)
+        last_speech = ((start, end, text), (toks, kept))
     cuts = sorted((c for c in cuts if c["end"] > c["start"]), key=lambda c: c["start"])
     for c in cuts:
         c["seconds"] = round(c["end"] - c["start"], 3)
