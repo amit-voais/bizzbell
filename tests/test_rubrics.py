@@ -132,11 +132,11 @@ def sub_parser(name):
 class StageGuides(unittest.TestCase):
     def test_every_stage_guide_names_an_existing_rubric(self):
         guides = sorted(glob.glob(os.path.join(STAGES, "*.md")))
-        self.assertEqual(len(guides), 11)
+        self.assertEqual(len(guides), 12)
         named = set()
         for g in guides:
             refs = re.findall(r"rubrics/([A-Za-z0-9_]+)\.json", read(g))
-            if not os.path.basename(g).startswith("00-"):
+            if not os.path.basename(g).startswith(("00-", "10-")):      # no gate: the budget yes; analysis is local
                 self.assertTrue(refs, "%s names no rubric" % g)
             for r in refs:
                 self.assertTrue(os.path.exists(os.path.join(RUBRICS, r + ".json")), "%s names rubrics/%s.json" % (g, r))

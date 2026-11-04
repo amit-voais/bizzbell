@@ -72,6 +72,45 @@ python3 scripts/bb.py demo --mock --no-b    # quicker: skips the HyperFrames ren
 
 The mock's pictures are flat colour cards and test patterns, so the videos only show that every step works.
 
+## After the video is published (optional)
+
+Once a video has real numbers, three free tools read them. They make no paid call, need no budget or login and
+fetch nothing; they only read the file you bring. Results go in `<project>/analysis/` (Markdown and JSON). Skip them
+and nothing changes: they are not part of the stage order or `bb status`.
+
+| You want to know | Bring this file | Run |
+|---|---|---|
+| Where people left, and what was being said then | A retention CSV, plus the voice-over's SRT if you want the words | `python3 scripts/bb.py analyse retention retention.csv --transcript voice.srt -p <project>` |
+| What could be trimmed | A timed transcript: SRT, VTT or whisper JSON | `python3 scripts/bb.py analyse edit voice.srt -p <project>` |
+| Which videos beat their own channel | A JSON list you or the agent collected | `python3 scripts/bb.py analyse outliers collected.json -p <project>` |
+
+**The retention CSV.** On YouTube: Studio, Analytics, open the video, Engagement, the audience retention chart, the
+download icon. Menus change, and this path comes from the upstream tool's notes, not from our own test against a real
+account. Any UTF-8 CSV works if it has a position column (seconds, percent, or a time like `0:30`), a percent still
+watching column, and at least 8 rows:
+
+```
+Video position (seconds),Audience retention (%)
+0,100
+3,97
+```
+
+If a platform shows only a chart with no download, type the points you can read into this same shape. If a column
+heading does not say seconds or percent, the tool guesses, tells you, and takes `--axis` or `--duration` to settle it.
+
+**The collected JSON.** One object per video, at least 4 videos per channel. `channel` and `views` are required;
+`views` may be `412000`, `"12,000"` or `"1.2M"`.
+
+```json
+[{"channel": "Corner Bakery", "title": "Cookie box", "views": 412000, "url": "https://example.com/v1"}]
+```
+
+**What these results are.** Retention and outliers show what happened, not why: a drop at 9 s does not prove the line
+at 9 s caused it, and a 10x video may owe it to timing or luck. The windows and thresholds are rules of thumb and are
+labelled heuristic in every report. Edit works from words and timings alone: it cannot hear music or a planned pause.
+It lists Hindi and Hinglish fillers (umm, matlab, yaani, haan, na, arre, in Roman and Devanagari) as cues to review
+only, because in a Bizzbell voice-over they are often written in on purpose.
+
 ## What it costs
 
 Bizzbell itself is free. The AI work is paid from **your Hidrogen wallet**, in INR, at Hidrogen's prices.
@@ -145,4 +184,5 @@ SVG, never emoji.
 
 ## License
 
-MIT (see `LICENSE`). Credits for HyperFrames and OpenFilm are in `NOTICE`.
+MIT (see `LICENSE`). Credits for HyperFrames and OpenFilm, and the licence of the three
+analysis tools adapted from youtube-agent-skill, are in `NOTICE`.

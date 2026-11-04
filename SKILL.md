@@ -1,6 +1,6 @@
 ---
 name: bizzbell
-description: Make short AI videos and video ads end to end with one Hidrogen API key - Instagram reels, video ads, story films, product promos and explainer videos, in any language (Hindi and Hinglish first-class). Use when the user asks to make, script or produce a video ad, reel, short, story film or explainer, or to resume a Bizzbell project folder (one with project.json). Research, story, a per-second screenplay, character sheets, keyframes, voice, music, two finished versions (Hidrogen video and HyperFrames) in every size, each layer scored by a quality gate, inside a budget the user approves.
+description: Make short AI videos and video ads end to end with one Hidrogen API key - Instagram reels, video ads, story films, product promos and explainer videos, in any language (Hindi and Hinglish first-class). Use when the user asks to make, script or produce a video ad, reel, short, story film or explainer, or to resume a Bizzbell project folder (one with project.json). Research, story, a per-second screenplay, character sheets, keyframes, voice, music, two finished versions (Hidrogen video and HyperFrames) in every size, each layer scored by a quality gate, inside a budget the user approves. After a video is published and the user has real data (a retention export, a timed transcript, a collected video list), it can also read that data, free.
 ---
 
 # Bizzbell
@@ -75,6 +75,15 @@ you reach the stage.
 - [ ] **9. Final** ([stages/09-final.md](stages/09-final.md)). `bb final`: every size, share copies, the final
   gate of each version against the screenplay (`final_a`, `final_b`, from `rubrics/final.json`) and
   `out/report.md`. Show the user both versions' scores and the file paths it prints.
+
+## After publishing (optional)
+
+**Stage 10, analysis** ([stages/10-analysis.md](stages/10-analysis.md)). Use it only when a video is published and the
+user brings real data; never offer it during a film, and never make the data up. `bb analyse retention <csv>`,
+`bb analyse edit <transcript>`, `bb analyse outliers <json>`. Local only: no paid call, no budget, no login, nothing
+fetched. Outputs go in `<project>/analysis/`; `bb status` and the stage order do not change. Results show what
+happened, not why. Filler cues in a Hindi or Hinglish voice-over are often intentional: pass them on to review, and
+do not call them mistakes.
 
 Before any paid command, run it with `--dry-run` when it has one: it prints what would be sent and the ledger
 check, and sends nothing.

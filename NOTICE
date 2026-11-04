@@ -19,6 +19,35 @@ OpenFilm
   ideas were used; no OpenFilm code was copied. "OpenFilm" is a trademark of its
   owners and is used here only to credit them.
 
+youtube-agent-skill
+  https://github.com/Jakeschincariol/youtube-agent-skill
+  Three tools in scripts/bizzbell/analysis/ are adapted from this repository, with
+  changes: retention.py from skills/yt-retention/retention.py, edit.py from
+  skills/yt-edit/deadair.py, and outliers.py from skills/yt-viral/swipe.py. Their
+  licence follows.
+
+  MIT License
+
+  Copyright (c) 2026 Jake Schincariol
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
 Hidrogen
   Bizzbell calls the Hidrogen API (api.hidrogen.in) with the user's own key. No
   Hidrogen code is included.
