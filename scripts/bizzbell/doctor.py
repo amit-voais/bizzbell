@@ -123,7 +123,7 @@ def run(root=None, write=True):
     eps = {name: hidrogen.probe(p) for name, p in MEDIA_ENDPOINTS.items()}
     result["endpoints"] = eps
     missing = [n for n, v in eps.items() if v == "missing"]
-    add("media endpoints", not missing, "all live" if not missing else
+    add("media endpoints", not missing, "routes found (doctor makes no paid call, so a real image or voice can still fail)" if not missing else
         "not live: %s (Version A is skipped when videos is not live; Version B still runs)" % ", ".join(missing))
     if write:
         result["saved"] = save(root, result)
